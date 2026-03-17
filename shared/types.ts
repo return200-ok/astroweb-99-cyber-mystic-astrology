@@ -26,6 +26,13 @@ export interface GuestbookEntry {
   message: string;
   ts: number;
 }
+export type BigFiveTrait = 'openness' | 'conscientiousness' | 'extraversion' | 'agreeableness' | 'neuroticism';
+export interface PersonalityQuestion {
+  id: number;
+  trait: BigFiveTrait;
+  text: Record<Language, string>;
+  isReverse?: boolean;
+}
 export interface ZodiacAnalysis {
   personality: string[];
   thinking: string[];
@@ -48,6 +55,7 @@ export interface I18nDictionary {
   navTerminal: string;
   navMatchmaker: string;
   navBBS: string;
+  navTest: string;
   rebootSystem: string;
   matchmakerTitle: string;
   matchmakerSub: string;
@@ -76,4 +84,16 @@ export interface I18nDictionary {
   analysisAttracts: string;
   analysisCareer: string;
   analysisNeeds: string;
+  testTitle: string;
+  testSub: string;
+  questionCount: string;
+  resultProfile: string;
+  traitHigh: string;
+  traitLow: string;
+  restartTest: string;
+  likert1: string;
+  likert2: string;
+  likert3: string;
+  likert4: string;
+  likert5: string;
 }

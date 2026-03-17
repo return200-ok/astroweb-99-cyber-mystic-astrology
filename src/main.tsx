@@ -14,6 +14,7 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { CompatibilityPage } from '@/pages/CompatibilityPage'
 import { CosmicBBS } from '@/pages/CosmicBBS'
+import { PersonalityTestPage } from '@/pages/PersonalityTestPage'
 import { RetroLayout } from '@/components/layout/RetroLayout'
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,6 +33,11 @@ const router = createBrowserRouter([
   {
     path: "/matchmaker",
     element: <RetroLayout><CompatibilityPage /></RetroLayout>,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/test",
+    element: <RetroLayout><PersonalityTestPage /></RetroLayout>,
     errorElement: <RouteErrorBoundary />,
   },
   {

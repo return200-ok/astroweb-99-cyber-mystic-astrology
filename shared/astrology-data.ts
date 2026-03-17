@@ -1,4 +1,4 @@
-import type { ZodiacSign, Language, I18nDictionary, ZodiacAnalysis } from './types';
+import type { ZodiacSign, Language, I18nDictionary, PersonalityQuestion, BigFiveTrait } from './types';
 export const I18N: Record<Language, I18nDictionary> = {
   en: {
     terminalTitle: "Astral Terminal",
@@ -6,6 +6,7 @@ export const I18N: Record<Language, I18nDictionary> = {
     navTerminal: "TERMINAL",
     navMatchmaker: "MATCHMAKER",
     navBBS: "COSMIC BBS",
+    navTest: "PSYCHO-SCAN",
     rebootSystem: "REBOOT_SYSTEM",
     matchmakerTitle: "Cosmic Matchmaker",
     matchmakerSub: "DETERMINING INTER-STELLAR COMPATIBILITY V2.0",
@@ -34,6 +35,18 @@ export const I18N: Record<Language, I18nDictionary> = {
     analysisAttracts: "Attracts",
     analysisCareer: "Career Path",
     analysisNeeds: "Basic Needs",
+    testTitle: "Psycho-Cybernetic Scan",
+    testSub: "NEURAL MAPPING & CORE TRAIT EXTRACTION",
+    questionCount: "PACKET",
+    resultProfile: "NEURAL_SIGNATURE_FOUND",
+    traitHigh: "High Activity",
+    traitLow: "Low Activity",
+    restartTest: "PURGE & RE-SCAN",
+    likert1: "Strongly Disagree",
+    likert2: "Disagree",
+    likert3: "Neutral",
+    likert4: "Agree",
+    likert5: "Strongly Agree",
   },
   vi: {
     terminalTitle: "Trạm Astral",
@@ -41,6 +54,7 @@ export const I18N: Record<Language, I18nDictionary> = {
     navTerminal: "TRẠM CUỐI",
     navMatchmaker: "KẾT ĐÔI",
     navBBS: "BẢN TIN VŨ TRỤ",
+    navTest: "QUÉT TÂM LÝ",
     rebootSystem: "KHỞI_ĐỘNG_LẠI",
     matchmakerTitle: "Máy Kết Đôi Vũ Trụ",
     matchmakerSub: "XÁC ĐỊNH ĐỘ TƯƠNG THÍCH LIÊN SAO V2.0",
@@ -69,8 +83,78 @@ export const I18N: Record<Language, I18nDictionary> = {
     analysisAttracts: "Thu Hút Kiểu Người",
     analysisCareer: "Sự Nghiệp",
     analysisNeeds: "Nhu Cầu Cơ Bản",
+    testTitle: "Quét Tâm Lý Cyber",
+    testSub: "BẢN ĐỒ THẦN KINH & TRÍCH XUẤT ĐẶC ĐIỂM CỐT LÕI",
+    questionCount: "GÓI TIN",
+    resultProfile: "ĐÃ_TÌM_THẤY_CHỮ_KÝ_THẦN_KINH",
+    traitHigh: "Hoạt động mạnh",
+    traitLow: "Hoạt động yếu",
+    restartTest: "XÓA & QUÉT LẠI",
+    likert1: "Rất không đồng ý",
+    likert2: "Không đồng ý",
+    likert3: "Trung lập",
+    likert4: "Đồng ý",
+    likert5: "Rất đồng ý",
   }
 };
+export const TRAIT_METADATA: Record<BigFiveTrait, { 
+  name: Record<Language, string>, 
+  highDesc: Record<Language, string>, 
+  lowDesc: Record<Language, string> 
+}> = {
+  openness: {
+    name: { en: "Openness", vi: "Cởi Mở" },
+    highDesc: { en: "High cognitive flexibility. User explores abstract subroutines and novel data architectures.", vi: "Linh hoạt nhận thức cao. Người dùng khám phá các quy trình trừu tượng và cấu trúc dữ liệu mới." },
+    lowDesc: { en: "Prefers optimized legacy systems. High stability in routine processing.", vi: "Ưu tiên các hệ thống cũ đã tối ưu. Độ ổn định cao trong xử lý thói quen." }
+  },
+  conscientiousness: {
+    name: { en: "Conscientiousness", vi: "Tận Tâm" },
+    highDesc: { en: "Maximum system organization. High task completion rate with minimal checksum errors.", vi: "Tổ chức hệ thống tối đa. Tỷ lệ hoàn thành nhiệm vụ cao với lỗi kiểm tra tối thiểu." },
+    lowDesc: { en: "Adaptive scheduling. System operates in a flexible, high-latency environment.", vi: "Lập trình thích ứng. Hệ thống hoạt động trong môi trường linh hoạt, độ trễ cao." }
+  },
+  extraversion: {
+    name: { en: "Extraversion", vi: "Hướng Ngoại" },
+    highDesc: { en: "Active network node. High energy output during inter-system communication.", vi: "Nút mạng hoạt động tích cực. Công suất năng lượng cao trong giao tiếp liên hệ thống." },
+    lowDesc: { en: "Stand-alone processing. Optimized for deep background tasks and internal data flow.", vi: "Xử lý độc lập. Được tối ưu hóa cho các tác vụ nền sâu và luồng dữ liệu nội bộ." }
+  },
+  agreeableness: {
+    name: { en: "Agreeableness", vi: "Dễ Chịu" },
+    highDesc: { en: "High system compatibility. Optimized for cooperative multi-threading and harmony.", vi: "Độ tương thích hệ thống cao. Được tối ưu cho đa luồng hợp tác và sự hài hòa." },
+    lowDesc: { en: "Analytical skepticism. Critical firewall active during data exchanges.", vi: "Sự hoài nghi phân tích. Tường lửa phê phán hoạt động trong quá trình trao đổi dữ liệu." }
+  },
+  neuroticism: {
+    name: { en: "Neuroticism", vi: "Nhạy Cảm" },
+    highDesc: { en: "Hyper-sensitive sensors. High reactivity to environment glitches and system noise.", vi: "Cảm biến cực nhạy. Phản ứng cao với các lỗi môi trường và nhiễu hệ thống." },
+    lowDesc: { en: "Stable kernel architecture. Minimal emotional fluctuations during critical errors.", vi: "Kiến trúc nhân ổn định. Biến động cảm xúc tối thiểu trong các lỗi nghiêm trọng." }
+  }
+};
+export const PERSONALITY_QUESTIONS: PersonalityQuestion[] = [
+  { id: 1, trait: 'extraversion', text: { en: "I am the life of the party.", vi: "Tôi là tâm điểm của các bữa tiệc." } },
+  { id: 2, trait: 'agreeableness', text: { en: "I feel little concern for others.", vi: "Tôi ít quan tâm đến người khác." }, isReverse: true },
+  { id: 3, trait: 'conscientiousness', text: { en: "I am always prepared.", vi: "Tôi luôn chuẩn bị sẵn sàng." } },
+  { id: 4, trait: 'neuroticism', text: { en: "I get stressed out easily.", vi: "Tôi dễ bị căng thẳng." } },
+  { id: 5, trait: 'openness', text: { en: "I have a rich vocabulary.", vi: "Tôi có vốn từ vựng phong phú." } },
+  { id: 6, trait: 'extraversion', text: { en: "I don't talk a lot.", vi: "Tôi không nói nhiều." }, isReverse: true },
+  { id: 7, trait: 'agreeableness', text: { en: "I am interested in people.", vi: "Tôi quan tâm đến mọi người." } },
+  { id: 8, trait: 'conscientiousness', text: { en: "I leave my belongings around.", vi: "Tôi hay để đồ đạc bừa bãi." }, isReverse: true },
+  { id: 9, trait: 'neuroticism', text: { en: "I am relaxed most of the time.", vi: "Tôi hầu như luôn thấy thư giãn." }, isReverse: true },
+  { id: 10, trait: 'openness', text: { en: "I have difficulty understanding abstract ideas.", vi: "Tôi khó hiểu được các ý tưởng trừu tượng." }, isReverse: true },
+  { id: 11, trait: 'extraversion', text: { en: "I feel comfortable around people.", vi: "Tôi cảm thấy thoải mái khi ở cạnh mọi người." } },
+  { id: 12, trait: 'agreeableness', text: { en: "I insult people.", vi: "Tôi hay xúc phạm người khác." }, isReverse: true },
+  { id: 13, trait: 'conscientiousness', text: { en: "I pay attention to details.", vi: "Tôi chú ý đến các chi tiết." } },
+  { id: 14, trait: 'neuroticism', text: { en: "I worry about things.", vi: "Tôi hay lo lắng về mọi thứ." } },
+  { id: 15, trait: 'openness', text: { en: "I have a vivid imagination.", vi: "Tôi có trí tưởng tượng phong phú." } },
+  { id: 16, trait: 'extraversion', text: { en: "I keep in the background.", vi: "Tôi thường giữ mình ở phía sau." }, isReverse: true },
+  { id: 17, trait: 'agreeableness', text: { en: "I sympathize with others' feelings.", vi: "Tôi đồng cảm với cảm xúc của người khác." } },
+  { id: 18, trait: 'conscientiousness', text: { en: "I make a mess of things.", vi: "Tôi hay làm mọi chuyện rối tung lên." }, isReverse: true },
+  { id: 19, trait: 'neuroticism', text: { en: "I seldom feel blue.", vi: "Tôi hiếm khi cảm thấy buồn bã." }, isReverse: true },
+  { id: 20, trait: 'openness', text: { en: "I am not interested in abstract ideas.", vi: "Tôi không quan tâm đến các ý tưởng trừu tượng." }, isReverse: true },
+  { id: 21, trait: 'extraversion', text: { en: "I start conversations.", vi: "Tôi hay chủ động bắt chuyện." } },
+  { id: 22, trait: 'agreeableness', text: { en: "I am not interested in other people's problems.", vi: "Tôi không quan tâm đến vấn đề của người khác." }, isReverse: true },
+  { id: 23, trait: 'conscientiousness', text: { en: "I get chores done right away.", vi: "Tôi hoàn thành các công việc vặt ngay lập tức." } },
+  { id: 24, trait: 'neuroticism', text: { en: "I am easily disturbed.", vi: "Tôi dễ bị làm phiền." } },
+  { id: 25, trait: 'openness', text: { en: "I spend time reflecting on things.", vi: "Tôi dành thời gian suy ngẫm về mọi thứ." } }
+];
 export const ZODIAC_SIGNS: ZodiacSign[] = [
   {
     id: 'aries',

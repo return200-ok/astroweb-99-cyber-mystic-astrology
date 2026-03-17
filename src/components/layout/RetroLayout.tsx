@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, Zap, Heart, Terminal, MessageSquare, Globe } from 'lucide-react';
+import { Sparkles, Zap, Heart, Terminal, MessageSquare, Globe, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAstroStore } from '@/lib/store';
 import { I18N } from '@shared/astrology-data';
@@ -12,6 +12,7 @@ export function RetroLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: dict.navTerminal, path: '/', icon: Terminal },
     { name: dict.navMatchmaker, path: '/matchmaker', icon: Heart },
+    { name: dict.navTest, path: '/test', icon: BrainCircuit },
     { name: dict.navBBS, path: '/bbs', icon: MessageSquare },
   ];
   const toggleLanguage = () => {
