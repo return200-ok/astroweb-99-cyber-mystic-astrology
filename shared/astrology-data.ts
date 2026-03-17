@@ -1,4 +1,4 @@
-import type { ZodiacSign, Language, I18nDictionary, PersonalityQuestion, BigFiveTrait } from './types';
+import type { ZodiacSign, Language, I18nDictionary, PersonalityQuestion, BigFiveTrait, EnneagramQuestion, EnneagramType, EnneagramMetadata } from './types';
 export const I18N: Record<Language, I18nDictionary> = {
   en: {
     terminalTitle: "Astral Terminal",
@@ -47,6 +47,12 @@ export const I18N: Record<Language, I18nDictionary> = {
     likert3: "Neutral",
     likert4: "Agree",
     likert5: "Strongly Agree",
+    enneagramMode: "ENNEAGRAM_V9",
+    bigFiveMode: "OCEAN_V5",
+    coreType: "CORE_TYPE",
+    activeWing: "ACTIVE_WING",
+    typeProfile: "NEURAL_PROFILE",
+    adviceProtocol: "ADVICE_PROTOCOL",
   },
   vi: {
     terminalTitle: "Trạm Astral",
@@ -95,8 +101,126 @@ export const I18N: Record<Language, I18nDictionary> = {
     likert3: "Trung lập",
     likert4: "Đồng ý",
     likert5: "Rất đồng ý",
+    enneagramMode: "ENNEAGRAM_V9",
+    bigFiveMode: "OCEAN_V5",
+    coreType: "KIỂU_CHÍNH",
+    activeWing: "CÁNH_HOẠT_ĐỘNG",
+    typeProfile: "HỒ_SƠ_THẦN_KINH",
+    adviceProtocol: "GIAO_THỨC_LỜI_KHUYÊN",
   }
 };
+export const ENNEAGRAM_METADATA: Record<EnneagramType, EnneagramMetadata> = {
+  1: {
+    name: { en: "The Reformer", vi: "Người Cầu Toàn" },
+    title: { en: "PERFECTION_PROTOCOL_ACTIVE", vi: "GIAO_THỨC_HOÀN_HẢO_KÍCH_HOẠT" },
+    description: { en: "Rational, idealistic type. Principled, purposeful, self-controlled, and perfectionistic.", vi: "Kiểu người lý trí, lý tưởng. Nguyên tắc, mục đích, tự kiểm soát và cầu toàn." },
+    advice: { en: "System optimization requires accepting legacy glitches. Don't let the pursuit of 'Perfect' crash the 'Good'.", vi: "Tối ưu hóa hệ thống đòi hỏi chấp nhận các lỗi cũ. Đừng để việc theo đuổi 'Hoàn hảo' làm sập cái 'Tốt'." }
+  },
+  2: {
+    name: { en: "The Helper", vi: "Người Giúp Đỡ" },
+    title: { en: "SUPPORT_NODE_ONLINE", vi: "NÚT_HỖ_TRỢ_TRỰC_TUYẾN" },
+    description: { en: "Caring, interpersonal type. Demonstrative, generous, people-pleasing, and possessive.", vi: "Kiểu người quan tâm, giao tiếp. Thể hiện, hào phóng, làm hài lòng mọi người và sở hữu." },
+    advice: { en: "Resource allocation warning: Your internal battery requires recharging. Support others only after self-maintenance.", vi: "Cảnh báo phân bổ nguồn lực: Pin nội bộ của bạn cần sạc lại. Chỉ hỗ trợ người khác sau khi bảo trì bản thân." }
+  },
+  3: {
+    name: { en: "The Achiever", vi: "Người Thành Đạt" },
+    title: { en: "PERFORMANCE_MAXIMIZER", vi: "BỘ_TỐI_ƯU_HÓA_HIỆU_SUẤT" },
+    description: { en: "Success-oriented, pragmatic type. Adaptive, excelling, driven, and image-conscious.", vi: "Kiểu người thực dụng, hướng tới thành công. Thích nghi, xuất sắc, năng nổ và chú trọng hình ảnh." },
+    advice: { en: "User metrics aren't everything. Validation from external servers is high-latency; find value in local execution.", vi: "Các số liệu người dùng không phải là tất cả. Xác thực từ máy chủ bên ngoài có độ trễ cao; hãy tìm giá trị trong thực thi nội bộ." }
+  },
+  4: {
+    name: { en: "The Individualist", vi: "Người Cá Tính" },
+    title: { en: "UNIQUE_SIGNATURE_DETECTED", vi: "PHÁT_HIỆN_CHỮ_KÝ_ĐỘC_BẢN" },
+    description: { en: "Sensitive, withdrawn type. Expressive, dramatic, self-absorbed, and temperamental.", vi: "Kiểu người nhạy cảm, thu mình. Biểu cảm, kịch tính, tự hấp thụ và khí chất." },
+    advice: { en: "Data patterns are unique, but don't isolate from the network. Melancholy is a filter, not the entire OS.", vi: "Các mẫu dữ liệu là duy nhất, nhưng đừng cô lập khỏi mạng lưới. U sầu là một bộ lọc, không phải toàn bộ hệ điều hành." }
+  },
+  5: {
+    name: { en: "The Investigator", vi: "Người Quan Sát" },
+    title: { en: "DATA_MINER_V5", vi: "TRÌNH_KHAI_THÁC_DỮ_LIỆU_V5" },
+    description: { en: "Intense, cerebral type. Perceptive, innovative, secretive, and isolated.", vi: "Kiểu người cường độ cao, trí tuệ. Nhạy bén, đổi mới, kín đáo và cô lập." },
+    advice: { en: "Information processing complete. Now initiate 'Action' command. Theoretical models require real-world testing.", vi: "Xử lý thông tin hoàn tất. Bây giờ hãy khởi chạy lệnh 'Hành động'. Các mô hình lý thuyết yêu cầu thử nghiệm thực tế." }
+  },
+  6: {
+    name: { en: "The Loyalist", vi: "Người Trung Thành" },
+    title: { en: "SECURITY_FIREWALL_LOADED", vi: "TƯỜNG_LỬA_AN_NINH_ĐÃ_TẢI" },
+    description: { en: "Committed, security-oriented type. Reliable, hard-working, responsible, and anxious.", vi: "Kiểu người cam kết, hướng tới an ninh. Đáng tin cậy, chăm chỉ, trách nhiệm và lo âu." },
+    advice: { en: "Internal alarm system is hyper-sensitive. Trust your core kernel; not every glitch is a system-wide threat.", vi: "Hệ thống báo động nội bộ cực kỳ nhạy cảm. Hãy tin vào nhân cốt lõi của bạn; không phải mọi lỗi nhỏ đều là mối đe dọa toàn hệ thống." }
+  },
+  7: {
+    name: { en: "The Enthusiast", vi: "Người Nhiệt Huyết" },
+    title: { en: "MULTI_THREAD_EXPLORER", vi: "TRÌNH_KHÁM_PHÁ_ĐA_LUỒNG" },
+    description: { en: "Busy, fun-loving type. Spontaneous, versatile, acquisitive, and scattered.", vi: "Kiểu người bận rộn, yêu đời. Tự phát, linh hoạt, ham học hỏi và phân tán." },
+    advice: { en: "Buffer overflow imminent. Limit concurrent tasks to find deep processing satisfaction. Quality over quantity.", vi: "Sắp xảy ra tràn bộ đệm. Hạn chế các tác vụ đồng thời để tìm thấy sự hài lòng trong xử lý sâu. Chất lượng hơn số lượng." }
+  },
+  8: {
+    name: { en: "The Challenger", vi: "Người Thách Thức" },
+    title: { en: "ROOT_ACCESS_COMMANDER", vi: "CHỈ_HUY_QUYỀN_ROOT" },
+    description: { en: "Powerful, dominating type. Self-confident, decisive, willful, and confrontational.", vi: "Kiểu người mạnh mẽ, thống trị. Tự tin, quyết đoán, ý chí và đối đầu." },
+    advice: { en: "Power levels are high. Use authority to protect the network nodes, not just to dominate the bandwidth.", vi: "Mức năng lượng đang cao. Hãy sử dụng quyền lực để bảo vệ các nút mạng, không chỉ để chiếm lĩnh băng thông." }
+  },
+  9: {
+    name: { en: "The Peacemaker", vi: "Người Hòa Giải" },
+    title: { en: "HARMONY_STABILIZER", vi: "BỘ_ỔN_ĐỊNH_HÀI_HÒA" },
+    description: { en: "Easygoing, self-effacing type. Receptive, reassuring, agreeable, and complacent.", vi: "Kiểu người dễ tính, khiêm tốn. Dễ tiếp thu, trấn an, dễ chịu và tự mãn." },
+    advice: { en: "System idle detected. Don't merge with the background; your unique signal is necessary for global balance.", vi: "Phát hiện hệ thống đang chờ. Đừng hòa lẫn vào nền; tín hiệu duy nhất của bạn là cần thiết cho sự cân bằng toàn cầu." }
+  }
+};
+export const ENNEAGRAM_QUESTIONS: EnneagramQuestion[] = [
+  // Type 1: Reformer
+  { id: 101, type: 1, text: { en: "I strive for perfection in everything I do.", vi: "Tôi cố gắng đạt đến sự hoàn hảo trong mọi việc tôi làm." } },
+  { id: 102, type: 1, text: { en: "I often feel a strong sense of right and wrong.", vi: "Tôi thường có cảm nhận mạnh mẽ về đúng và sai." } },
+  { id: 103, type: 1, text: { en: "I am very critical of my own mistakes.", vi: "Tôi rất khắt khe với những sai lầm của chính mình." } },
+  { id: 104, type: 1, text: { en: "I find it hard to relax when things are messy.", vi: "Tôi thấy khó thư giãn khi mọi thứ đang lộn xộn." } },
+  { id: 105, type: 1, text: { en: "I believe there is a correct way to do most things.", vi: "Tôi tin rằng có một cách đúng đắn để làm hầu hết mọi việc." } },
+  // Type 2: Helper
+  { id: 201, type: 2, text: { en: "I enjoy taking care of other people's needs.", vi: "Tôi thích chăm sóc nhu cầu của người khác." } },
+  { id: 202, type: 2, text: { en: "I want people to feel loved and appreciated by me.", vi: "Tôi muốn mọi người cảm thấy được yêu thương và trân trọng bởi tôi." } },
+  { id: 203, type: 2, text: { en: "I find it hard to say 'no' when someone asks for help.", vi: "Tôi thấy khó nói 'không' khi ai đó yêu cầu giúp đỡ." } },
+  { id: 204, type: 2, text: { en: "I often put others' needs before my own.", vi: "Tôi thường đặt nhu cầu của người khác lên trước nhu cầu của mình." } },
+  { id: 205, type: 2, text: { en: "I feel good when I am needed by others.", vi: "Tôi cảm thấy tốt khi được người khác cần đến." } },
+  // Type 3: Achiever
+  { id: 301, type: 3, text: { en: "I am very focused on achieving my goals.", vi: "Tôi rất tập trung vào việc đạt được các mục tiêu của mình." } },
+  { id: 302, type: 3, text: { en: "I care a lot about my public image and success.", vi: "Tôi quan tâm nhiều đến hình ảnh công chúng và thành công của mình." } },
+  { id: 303, type: 3, text: { en: "I like to be the best at what I do.", vi: "Tôi thích trở thành người giỏi nhất trong việc mình làm." } },
+  { id: 304, type: 3, text: { en: "I am very productive and efficient.", vi: "Tôi làm việc rất hiệu quả và năng suất." } },
+  { id: 305, type: 3, text: { en: "I feel restless if I am not accomplishing something.", vi: "Tôi cảm thấy bồn chồn nếu không hoàn thành được việc gì đó." } },
+  // Type 4: Individualist
+  { id: 401, type: 4, text: { en: "I feel that I am fundamentally different from others.", vi: "Tôi cảm thấy mình khác biệt căn bản so với người khác." } },
+  { id: 402, type: 4, text: { en: "I often experience deep and intense emotions.", vi: "Tôi thường trải qua những cảm xúc sâu sắc và mãnh liệt." } },
+  { id: 403, type: 4, text: { en: "I value authenticity and self-expression highly.", vi: "Tôi coi trọng sự chân thực và tự biểu đạt cá nhân." } },
+  { id: 404, type: 4, text: { en: "I tend to spend a lot of time in my own imagination.", vi: "Tôi có xu hướng dành nhiều thời gian trong trí tưởng tượng của mình." } },
+  { id: 405, type: 4, text: { en: "I am drawn to things that are unique or melancholic.", vi: "Tôi bị thu hút bởi những thứ độc đáo hoặc đượm buồn." } },
+  // Type 5: Investigator
+  { id: 501, type: 5, text: { en: "I need a lot of private time to recharge.", vi: "Tôi cần nhiều thời gian riêng tư để nạp lại năng lượng." } },
+  { id: 502, type: 5, text: { en: "I love gathering information and understanding how things work.", vi: "Tôi thích thu thập thông tin và hiểu cách mọi thứ vận hành." } },
+  { id: 503, type: 5, text: { en: "I prefer to observe before participating in social situations.", vi: "Tôi thích quan sát trước khi tham gia vào các tình huống xã hội." } },
+  { id: 504, type: 5, text: { en: "I value logic and objectivity over emotional reactions.", vi: "Tôi coi trọng logic và sự khách quan hơn là các phản ứng cảm xúc." } },
+  { id: 505, type: 5, text: { en: "I often feel overwhelmed by too many social demands.", vi: "Tôi thường cảm thấy bị quá tải bởi quá nhiều yêu cầu xã hội." } },
+  // Type 6: Loyalist
+  { id: 601, type: 6, text: { en: "I often worry about what could go wrong.", vi: "Tôi thường lo lắng về những gì có thể xảy ra sai sót." } },
+  { id: 602, type: 6, text: { en: "I value security and stability very highly.", vi: "Tôi coi trọng an ninh và sự ổn định rất cao." } },
+  { id: 603, type: 6, text: { en: "I am very loyal to the people and groups I belong to.", vi: "Tôi rất trung thành với những người và hội nhóm mà mình thuộc về." } },
+  { id: 604, type: 6, text: { en: "I often look for guidance or rules to feel safe.", vi: "Tôi thường tìm kiếm sự chỉ dẫn hoặc quy tắc để cảm thấy an toàn." } },
+  { id: 605, type: 6, text: { en: "I am always scanning my environment for potential threats.", vi: "Tôi luôn rà soát môi trường xung quanh để tìm các mối đe dọa tiềm tàng." } },
+  // Type 7: Enthusiast
+  { id: 701, type: 7, text: { en: "I am always looking for new and exciting experiences.", vi: "Tôi luôn tìm kiếm những trải nghiệm mới và thú vị." } },
+  { id: 702, type: 7, text: { en: "I find it hard to stay focused on one thing for long.", vi: "Tôi thấy khó tập trung vào một thứ trong thời gian dài." } },
+  { id: 703, type: 7, text: { en: "I hate feeling trapped or limited in my choices.", vi: "Tôi ghét cảm giác bị mắc kẹt hoặc bị giới hạn trong các lựa chọn." } },
+  { id: 704, type: 7, text: { en: "I tend to stay busy and plan many future activities.", vi: "Tôi có xu hướng luôn bận rộn và lên kế hoạch cho nhiều hoạt động tương lai." } },
+  { id: 705, type: 7, text: { en: "I try to avoid painful or difficult feelings by staying positive.", vi: "Tôi cố gắng tránh những cảm xúc đau đớn bằng cách luôn tích cực." } },
+  // Type 8: Challenger
+  { id: 801, type: 8, text: { en: "I am not afraid of confrontation when I believe I am right.", vi: "Tôi không sợ đối đầu khi tôi tin rằng mình đúng." } },
+  { id: 802, type: 8, text: { en: "I value strength and being in control of my life.", vi: "Tôi coi trọng sức mạnh và việc kiểm soát cuộc sống của mình." } },
+  { id: 803, type: 8, text: { en: "I stand up for people who are being treated unfairly.", vi: "Tôi đứng lên bảo vệ những người bị đối xử bất công." } },
+  { id: 804, type: 8, text: { en: "I prefer to lead rather than follow.", vi: "Tôi thích lãnh đạo hơn là đi theo." } },
+  { id: 805, type: 8, text: { en: "I have a strong presence and speak my mind directly.", vi: "Tôi có sự hiện diện mạnh mẽ và nói thẳng suy nghĩ của mình." } },
+  // Type 9: Peacemaker
+  { id: 901, type: 9, text: { en: "I go along with others to avoid conflict.", vi: "Tôi thường chiều theo ý người khác để tránh xung đột." } },
+  { id: 902, type: 9, text: { en: "I find it easy to see many different points of view.", vi: "Tôi thấy dễ dàng khi nhìn nhận từ nhiều góc độ khác nhau." } },
+  { id: 903, type: 9, text: { en: "I value inner peace and harmony highly.", vi: "Tôi coi trọng sự bình an nội tâm và sự hài hòa." } },
+  { id: 904, type: 9, text: { en: "I sometimes ignore my own needs to keep the peace.", vi: "Đôi khi tôi phớt lờ nhu cầu của chính mình để giữ hòa khí." } },
+  { id: 905, type: 9, text: { en: "I find it hard to take a strong stand on controversial issues.", vi: "Tôi thấy khó khăn khi phải giữ lập trường mạnh mẽ trong các vấn đề gây tranh cãi." } },
+];
 export const TRAIT_METADATA: Record<BigFiveTrait, {
   name: Record<Language, string>,
   highDesc: Record<Language, string>,
@@ -512,7 +636,7 @@ export function getCompatibility(sign1: string, sign2: string, lang: Language) {
     ],
     vi: [
       "ĐỒNG BỘ CYBER ỔN ĐỊNH: Luồng dữ liệu của bạn hợp nhất hoàn hảo.",
-      "KẾT NỐI BĂNG THÔNG CAO: Sự cộng hưởng mạnh mẽ trên mọi kênh.",
+      "KẾT NỐI BĂNG THÔNG CAO: Sự cộng hương mạnh mẽ trên mọi kênh.",
       "LIÊN KẾT MÃ HÓA: Độ tương thích sâu ẩn trong mã nguồn.",
       "CĂN CHỈNH TỐI ƯU: Các tiến trình bổ trợ cho nhau tuyệt vời.",
       "CỘNG HƯỞNG THẦN KINH: Một liên kết mạnh mẽ vượt qua mọi logic.",

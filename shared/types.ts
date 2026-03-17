@@ -27,9 +27,16 @@ export interface GuestbookEntry {
   ts: number;
 }
 export type BigFiveTrait = 'openness' | 'conscientiousness' | 'extraversion' | 'agreeableness' | 'neuroticism';
+export type EnneagramType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export interface PersonalityQuestion {
   id: number;
   trait: BigFiveTrait;
+  text: Record<Language, string>;
+  isReverse?: boolean;
+}
+export interface EnneagramQuestion {
+  id: number;
+  type: EnneagramType;
   text: Record<Language, string>;
   isReverse?: boolean;
 }
@@ -48,6 +55,12 @@ export interface ZodiacSign {
   dates: Record<Language, string>;
   horoscopes: Record<Language, string>;
   analysis: Record<Language, ZodiacAnalysis>;
+}
+export interface EnneagramMetadata {
+  name: Record<Language, string>;
+  title: Record<Language, string>;
+  description: Record<Language, string>;
+  advice: Record<Language, string>;
 }
 export interface I18nDictionary {
   terminalTitle: string;
@@ -96,4 +109,10 @@ export interface I18nDictionary {
   likert3: string;
   likert4: string;
   likert5: string;
+  enneagramMode: string;
+  bigFiveMode: string;
+  coreType: string;
+  activeWing: string;
+  typeProfile: string;
+  adviceProtocol: string;
 }
