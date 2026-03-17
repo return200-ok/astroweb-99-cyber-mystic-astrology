@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BrainCircuit, Loader2, ShieldCheck, RefreshCcw, Binary, Printer, Zap } from 'lucide-react';
+import { BrainCircuit, Loader2, ShieldCheck, RefreshCcw, Binary, Printer, Zap, Terminal } from 'lucide-react';
 import type { BigFiveTrait, EnneagramType } from '@shared/types';
 type TestMode = 'BIG_FIVE' | 'ENNEAGRAM';
 function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
@@ -48,7 +48,6 @@ export function PersonalityTestPage() {
   const hasResults = useMemo(() =>
     (testMode === 'BIG_FIVE' && !!bigFiveResults) || (testMode === 'ENNEAGRAM' && !!enneagramResults),
   [testMode, bigFiveResults, enneagramResults]);
-  // Immediately reset when mode changes to prevent index out of bounds
   useEffect(() => {
     setCurrentQuestionIndex(0);
     setAnswers({});
@@ -74,7 +73,7 @@ export function PersonalityTestPage() {
         const traitSums: Record<BigFiveTrait, number> = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, neuroticism: 0 };
         const traitCounts: Record<BigFiveTrait, number> = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, neuroticism: 0 };
         PERSONALITY_QUESTIONS.forEach(q => {
-          const raw = finalAnswers[q.id] || 3;
+          const raw = finalAnswers[q.id] ?? 3;
           const score = q.isReverse ? 6 - raw : raw;
           traitSums[q.trait] += score;
           traitCounts[q.trait] += 1;
@@ -90,7 +89,7 @@ export function PersonalityTestPage() {
       } else {
         const typeSums: Record<EnneagramType, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
         ENNEAGRAM_QUESTIONS.forEach(q => {
-          const raw = finalAnswers[q.id] || 3;
+          const raw = finalAnswers[q.id] ?? 3;
           typeSums[q.type] += raw;
         });
         const finalResults: Record<EnneagramType, number> = {
@@ -192,7 +191,7 @@ export function PersonalityTestPage() {
                 {[1, 2, 3, 4, 5].map(val => (
                   <Button key={val} variant="outline" onClick={() => handleAnswer(val)} className="border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black rounded-none h-auto py-4 font-mono text-lg transition-all group">
                     <span className="mr-4 opacity-30">[{val}]</span>
-                    {dict[`likert${val}` as keyof typeof dict]}
+                    {(dict as any)[`likert${val}`]}
                   </Button>
                 ))}
               </div>
@@ -200,38 +199,100 @@ export function PersonalityTestPage() {
           </AnimatePresence>
         </div>
       )}
-      {step === 'results' && testMode === 'BIG_FIVE' && bigFiveResults && (
-        <div className="grid lg:grid-cols-2 gap-8">
-          <Card className="bg-black border-2 border-magenta-500 p-8 rounded-none shadow-neon space-y-8 h-fit">
-             {/* Charts and results UI */}
-             {(Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value], idx) => (
+      {step === 'results' && (
+        <div className="space-y-10">
+          <div className="text-center space-y-2">
+            <h1 className="text-5xl font-bold neon-text-magenta uppercase italic">{dict.resultProfile}</h1>
+            <p className="text-cyan-500 font-mono text-sm tracking-widest">ENCRYPTION: NEURAL-99 [VERIFIED]</p>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            <Card className="bg-black border-2 border-magenta-500 p-8 rounded-none shadow-neon space-y-8">
+              {testMode === 'BIG_FIVE' && bigFiveResults && (Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value], idx) => (
                 <div key={trait} className="space-y-2">
                   <div className="flex justify-between font-mono text-sm text-magenta-500 uppercase">
                     <span>{TRAIT_METADATA[trait].name[language]}</span>
                     <span>{value}%</span>
                   </div>
                   <div className="h-4 bg-magenta-950 border border-magenta-500 p-0.5">
-                    <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ duration: 1.5, delay: idx * 0.1 }} className="h-full bg-magenta-500" />
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ duration: 1.5, delay: idx * 0.1 }} className="h-full bg-magenta-500 shadow-neon" />
                   </div>
                 </div>
               ))}
-              <Button variant="outline" onClick={restart} className="w-full border-magenta-500 text-magenta-500 rounded-none uppercase font-bold">RE-SCAN</Button>
-          </Card>
-        </div>
-      )}
-      {step === 'results' && testMode === 'ENNEAGRAM' && enneagramResults && enneagramAnalysis && (
-        <div className="grid lg:grid-cols-2 gap-8">
-           <Card className="bg-black border-2 border-cyan-500 p-8 rounded-none shadow-neon-cyan space-y-8 h-fit">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="border-2 border-cyan-500 p-4 text-center">
-                  <span className="text-4xl font-bold text-cyan-500">{enneagramAnalysis.core}</span>
+              {testMode === 'ENNEAGRAM' && enneagramResults && enneagramAnalysis && (
+                <div className="space-y-10">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="border-2 border-cyan-500 p-6 text-center bg-cyan-500/5">
+                      <p className="text-[10px] text-cyan-500 font-mono mb-2 uppercase">{dict.coreType}</p>
+                      <span className="text-7xl font-bold text-cyan-500 neon-text-cyan">{enneagramAnalysis.core}</span>
+                    </div>
+                    <div className="border-2 border-magenta-500 p-6 text-center bg-magenta-500/5">
+                      <p className="text-[10px] text-magenta-500 font-mono mb-2 uppercase">{dict.activeWing}</p>
+                      <span className="text-7xl font-bold text-magenta-500 neon-text-magenta">{enneagramAnalysis.wing}</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(Object.entries(enneagramResults) as [string, number][]).map(([type, val]) => (
+                      <div key={type} className="border border-magenta-500/30 p-2 text-center">
+                        <p className="text-[8px] text-magenta-500 font-mono uppercase">T{type}</p>
+                        <div className="h-1 bg-magenta-950 mt-1"><div className="h-full bg-magenta-500" style={{ width: `${val}%` }} /></div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="border-2 border-magenta-500 p-4 text-center">
-                  <span className="text-4xl font-bold text-magenta-500">{enneagramAnalysis.wing}</span>
-                </div>
+              )}
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={restart} className="flex-1 border-magenta-500 text-magenta-500 hover:bg-magenta-500/10 rounded-none uppercase font-bold h-12">
+                  <RefreshCcw className="mr-2 w-4 h-4" /> {dict.restartTest}
+                </Button>
+                <Button variant="outline" className="flex-1 border-cyan-500 text-cyan-500 hover:bg-cyan-500/10 rounded-none uppercase font-bold h-12">
+                  <Printer className="mr-2 w-4 h-4" /> EXPORT_LOG
+                </Button>
               </div>
-              <Button variant="outline" onClick={restart} className="w-full border-cyan-500 text-cyan-500 rounded-none uppercase font-bold">RE-SCAN</Button>
-           </Card>
+            </Card>
+            <Card className="bg-black border-2 border-cyan-500 p-0 rounded-none shadow-neon-cyan overflow-hidden">
+               <div className="bg-cyan-500 text-black px-4 py-1.5 flex justify-between items-center font-bold font-mono text-sm">
+                 <div className="flex items-center gap-2">
+                   <Terminal className="w-4 h-4" />
+                   <span>{dict.typeProfile}</span>
+                 </div>
+               </div>
+               <div className="p-8 space-y-6 font-mono text-cyan-500">
+                  {testMode === 'ENNEAGRAM' && enneagramAnalysis && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 text-2xl font-bold border-b border-cyan-500/20 pb-2">
+                        <Zap className="text-cyan-500 animate-pulse" />
+                        <TypewriterText text={`${ENNEAGRAM_METADATA[enneagramAnalysis.core].name[language].toUpperCase()}`} />
+                      </div>
+                      <div className="p-4 bg-cyan-500/5 border-l-4 border-cyan-500 italic text-sm">
+                        <TypewriterText text={ENNEAGRAM_METADATA[enneagramAnalysis.core].description[language]} delay={1000} />
+                      </div>
+                      <div className="space-y-2 mt-6">
+                        <p className="text-xs uppercase font-bold text-magenta-500 flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4" /> {dict.adviceProtocol}
+                        </p>
+                        <p className="text-xs opacity-80 leading-relaxed">
+                          <TypewriterText text={ENNEAGRAM_METADATA[enneagramAnalysis.core].advice[language]} delay={2000} />
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {testMode === 'BIG_FIVE' && bigFiveResults && (
+                    <div className="space-y-6">
+                       {(Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value], i) => (
+                         <div key={trait} className="space-y-1">
+                           <p className="text-xs font-bold uppercase text-magenta-500">
+                             [{trait.slice(0, 3).toUpperCase()}] {TRAIT_METADATA[trait].name[language]}
+                           </p>
+                           <p className="text-[10px] opacity-70 italic">
+                             <TypewriterText text={value > 50 ? TRAIT_METADATA[trait].highDesc[language] : TRAIT_METADATA[trait].lowDesc[language]} delay={i * 500} />
+                           </p>
+                         </div>
+                       ))}
+                    </div>
+                  )}
+               </div>
+            </Card>
+          </div>
         </div>
       )}
     </div>

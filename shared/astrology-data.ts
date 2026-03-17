@@ -1,4 +1,5 @@
 import type { ZodiacSign, Language, I18nDictionary, PersonalityQuestion, BigFiveTrait, EnneagramQuestion, EnneagramType, EnneagramMetadata } from './types';
+import { PALACE_ORDER_VN } from './tuvi-data';
 export const I18N: Record<Language, I18nDictionary> = {
   en: {
     terminalTitle: "Astral Terminal",
@@ -134,7 +135,7 @@ export const ENNEAGRAM_METADATA: Record<EnneagramType, EnneagramMetadata> = {
     name: { en: "The Reformer", vi: "Người Cầu Toàn" },
     title: { en: "PERFECTION_PROTOCOL_ACTIVE", vi: "GIAO_THỨC_HOÀN_HẢO_KÍCH_HOẠT" },
     description: { en: "Rational, idealistic type. Principled, purposeful, self-controlled, and perfectionistic.", vi: "Kiểu người lý trí, lý tưởng. Nguyên tắc, mục đích, tự kiểm soát và cầu toàn." },
-    advice: { en: "System optimization requires accepting legacy glitches. Don't let the pursuit of 'Perfect' crash the 'Good'.", vi: "Tối ưu hóa hệ thống đòi hỏi chấp nhận các lỗi cũ. Đừng để việc theo đuổi 'Hoàn hảo' làm sập cái 'Tốt'." }
+    advice: { en: "System optimization requires accepting legacy glitches. Don't let the pursuit of 'Perfect' crash the 'Good'.", vi: "Tối ưu hóa hệ thống đòi hỏi chấp nhận các lỗi cũ. Đừng thể việc theo đuổi 'Hoàn hảo' làm sập cái 'Tốt'." }
   },
   2: {
     name: { en: "The Helper", vi: "Người Giúp Đỡ" },
