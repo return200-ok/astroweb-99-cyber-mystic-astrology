@@ -77,11 +77,7 @@ function updateWranglerJsonc() {
 }
 
 function runSetupCommands() {
-    const commands = [
-    "bun add lunar-javascript html-to-image",
-    "bun install lunar-javascript html-to-image",
-    "bun install lucide-react framer-motion html-to-image lunar-javascript"
-];
+    const commands = [];
     
     if (commands.length === 0) {
         console.log('⊘ No setup commands to run');
