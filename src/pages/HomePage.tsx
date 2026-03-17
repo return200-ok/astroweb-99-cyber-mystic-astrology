@@ -3,9 +3,10 @@ import { useAstroStore } from '@/lib/store';
 import { ZODIAC_SIGNS, I18N } from '@shared/astrology-data';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { RefreshCcw, Sun, Moon, Sparkles } from 'lucide-react';
+import { RefreshCcw, Moon, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeepScanPanel } from '@/components/DeepScanPanel';
+import { cn } from '@/lib/utils';
 export function HomePage() {
   const selectedSignId = useAstroStore((s) => s.selectedSignId);
   const setSelectedSignId = useAstroStore((s) => s.setSelectedSignId);
@@ -27,7 +28,7 @@ export function HomePage() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [selectedSignId]);
+  }, [selectedSignId, selectedSign]);
   if (!selectedSign) {
     return (
       <div className="space-y-16">
@@ -39,7 +40,7 @@ export function HomePage() {
           >
             <Sparkles className="w-12 h-12 text-gold-500 animate-pulse" />
           </motion.div>
-          <h1 className="text-6xl md:text-8xl font-mystic font-bold text-gold-500 tracking-widest uppercase italic leading-none mystic-text-glow">
+          <h1 className="text-6xl md:text-8xl font-mystic font-bold text-gold-500 tracking-widest uppercase italic leading-none mystic-text-glow text-center">
             {dict.terminalTitle}
           </h1>
           <p className="text-gold-500/60 text-xl font-serif italic uppercase tracking-[0.4em] animate-pulse">

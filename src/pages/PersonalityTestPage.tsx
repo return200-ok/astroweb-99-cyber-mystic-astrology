@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BrainCircuit, Loader2, Sparkles, RefreshCcw, Sun, Scroll, Zap, Star } from 'lucide-react';
+import { Loader2, Sparkles, RefreshCcw, Sun, Scroll, Star } from 'lucide-react';
 import type { BigFiveTrait, EnneagramType } from '@shared/types';
 type TestMode = 'BIG_FIVE' | 'ENNEAGRAM';
 export function PersonalityTestPage() {
@@ -77,9 +77,9 @@ export function PersonalityTestPage() {
           4: Math.round((typeSums[4] / 5) * 20),
           5: Math.round((typeSums[5] / 5) * 20),
           6: Math.round((typeSums[6] / 5) * 20),
-          7: Math.round((typeSums[7] / 2) * 50), // Fallback math
-          8: Math.round((typeSums[8] / 2) * 50),
-          9: Math.round((typeSums[9] / 2) * 50),
+          7: Math.round((typeSums[7] / 5) * 20),
+          8: Math.round((typeSums[8] / 5) * 20),
+          9: Math.round((typeSums[9] / 5) * 20),
         } as Record<EnneagramType, number>;
         setEnneagramResults(finalResults);
       }
@@ -126,13 +126,13 @@ export function PersonalityTestPage() {
       </div>
       {step === 'intro' && (
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h1 className="text-5xl md:text-7xl font-mystic font-bold text-gold-500 uppercase italic tracking-tighter">
+          <h1 className="text-5xl md:text-7xl font-mystic font-bold text-gold-500 uppercase italic tracking-tighter text-center">
             {testMode === 'BIG_FIVE' ? dict.testTitle : dict.enneagramMode}
           </h1>
           <Card className="bg-indigo-950/40 border border-gold-500/30 p-12 rounded-3xl shadow-ethereal-glow">
             <div className="space-y-8 text-gold-500/80 font-serif text-xl italic leading-relaxed">
               <p>“Before the stars can guide you, the inner self must be revealed.”</p>
-              <Button onClick={() => setStep('testing')} className="bg-gold-500 text-indigo-900 font-mystic font-bold px-16 py-8 text-2xl rounded-full hover:bg-gold-400 hover:shadow-ethereal-glow transition-all uppercase tracking-widest">
+              <Button onClick={() => setStep('testing')} className="bg-gold-500 text-indigo-900 font-mystic font-bold px-16 py-8 text-2xl rounded-full hover:bg-gold-400 hover:shadow-ethereal-glow transition-all uppercase tracking-widest h-auto">
                 <Sparkles className="mr-3 w-6 h-6" /> BEGIN REVELATION
               </Button>
             </div>
@@ -210,7 +210,7 @@ export function PersonalityTestPage() {
                   </div>
                   {testMode === 'ENNEAGRAM' && enneagramAnalysis && (
                     <div className="space-y-6">
-                      <h3 className="text-2xl font-mystic not-italic text-gold-500">{ENNEAGRAM_METADATA[enneagramAnalysis.core].name[language].toUpperCase()}</h3>
+                      <h3 className="text-2xl font-mystic not-italic text-gold-500 uppercase">{ENNEAGRAM_METADATA[enneagramAnalysis.core].name[language]}</h3>
                       <p>{ENNEAGRAM_METADATA[enneagramAnalysis.core].description[language]}</p>
                       <div className="pt-6 border-t border-gold-500/20">
                          <p className="text-xs uppercase font-mystic not-italic text-gold-500 mb-2 flex items-center gap-2">
@@ -222,7 +222,7 @@ export function PersonalityTestPage() {
                   )}
                   {testMode === 'BIG_FIVE' && bigFiveResults && (
                     <div className="space-y-6">
-                       {(Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value], i) => (
+                       {(Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value]) => (
                          <div key={trait} className="space-y-1">
                            <p className="text-xs font-mystic not-italic uppercase text-gold-500 tracking-tighter">
                              {TRAIT_METADATA[trait].name[language]}
