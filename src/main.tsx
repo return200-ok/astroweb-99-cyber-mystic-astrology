@@ -12,17 +12,21 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
-
+import { CompatibilityPage } from '@/pages/CompatibilityPage'
+import { RetroLayout } from '@/components/layout/RetroLayout'
 const queryClient = new QueryClient();
-
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />,
+    element: <RetroLayout><HomePage /></RetroLayout>,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/matchmaker",
+    element: <RetroLayout><CompatibilityPage /></RetroLayout>,
     errorElement: <RouteErrorBoundary />,
   },
 ]);
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -32,4 +36,3 @@ createRoot(document.getElementById('root')!).render(
     </QueryClientProvider>
   </StrictMode>,
 )
-   
