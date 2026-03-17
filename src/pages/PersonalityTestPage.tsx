@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAstroStore } from '@/lib/store';
 import { I18N, PERSONALITY_QUESTIONS, TRAIT_METADATA, ENNEAGRAM_QUESTIONS, ENNEAGRAM_METADATA } from '@shared/astrology-data';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -43,37 +42,36 @@ export function PersonalityTestPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [isComputing, setIsComputing] = useState(false);
-  // Derived Values
-  const questions = useMemo(() => 
-    testMode === 'BIG_FIVE' ? PERSONALITY_QUESTIONS : ENNEAGRAM_QUESTIONS, 
+  const questions = useMemo(() =>
+    testMode === 'BIG_FIVE' ? PERSONALITY_QUESTIONS : ENNEAGRAM_QUESTIONS,
   [testMode]);
-  const hasResults = useMemo(() => 
+  const hasResults = useMemo(() =>
     (testMode === 'BIG_FIVE' && !!bigFiveResults) || (testMode === 'ENNEAGRAM' && !!enneagramResults),
   [testMode, bigFiveResults, enneagramResults]);
   useEffect(() => {
     if (hasResults) setStep('results');
     else setStep('intro');
-    // Reset state when switching modes
     setCurrentQuestionIndex(0);
     setAnswers({});
   }, [testMode, hasResults]);
   const progress = (currentQuestionIndex / questions.length) * 100;
   const handleAnswer = (value: number) => {
-    setAnswers(prev => ({ ...prev, [questions[currentQuestionIndex].id]: value }));
+    const updatedAnswers = { ...answers, [questions[currentQuestionIndex].id]: value };
+    setAnswers(updatedAnswers);
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      finalizeTest();
+      finalizeTest(updatedAnswers);
     }
   };
-  const finalizeTest = () => {
+  const finalizeTest = (finalAnswers: Record<number, number>) => {
     setIsComputing(true);
     setTimeout(() => {
       if (testMode === 'BIG_FIVE') {
         const traitSums: Record<BigFiveTrait, number> = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, neuroticism: 0 };
         const traitCounts: Record<BigFiveTrait, number> = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, neuroticism: 0 };
         PERSONALITY_QUESTIONS.forEach(q => {
-          const raw = answers[q.id] || 3;
+          const raw = finalAnswers[q.id] || 3;
           const score = q.isReverse ? 6 - raw : raw;
           traitSums[q.trait] += score;
           traitCounts[q.trait] += 1;
@@ -89,15 +87,20 @@ export function PersonalityTestPage() {
       } else {
         const typeSums: Record<EnneagramType, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
         ENNEAGRAM_QUESTIONS.forEach(q => {
-          const raw = answers[q.id] || 3;
+          const raw = finalAnswers[q.id] || 3;
           typeSums[q.type] += raw;
         });
-        // Normalize to 100 (5 questions * max 5 = 25 per type)
-        const finalResults: Record<EnneagramType, number> = Object.keys(typeSums).reduce((acc, key) => {
-          const type = parseInt(key) as EnneagramType;
-          acc[type] = Math.round((typeSums[type] / 25) * 100);
-          return acc;
-        }, {} as Record<EnneagramType, number>);
+        const finalResults: Record<EnneagramType, number> = {
+          1: Math.round((typeSums[1] / 25) * 100),
+          2: Math.round((typeSums[2] / 25) * 100),
+          3: Math.round((typeSums[3] / 25) * 100),
+          4: Math.round((typeSums[4] / 25) * 100),
+          5: Math.round((typeSums[5] / 25) * 100),
+          6: Math.round((typeSums[6] / 25) * 100),
+          7: Math.round((typeSums[7] / 25) * 100),
+          8: Math.round((typeSums[8] / 25) * 100),
+          9: Math.round((typeSums[9] / 25) * 100),
+        };
         setEnneagramResults(finalResults);
       }
       setIsComputing(false);
@@ -116,7 +119,6 @@ export function PersonalityTestPage() {
     const scores = Object.entries(enneagramResults) as [string, number][];
     scores.sort((a, b) => b[1] - a[1]);
     const core = parseInt(scores[0][0]) as EnneagramType;
-    // Wing detection (highest adjacent type)
     const left = core === 1 ? 9 : core - 1;
     const right = core === 9 ? 1 : core + 1;
     const wing = enneagramResults[left as EnneagramType] > enneagramResults[right as EnneagramType] ? left : right;
@@ -126,12 +128,27 @@ export function PersonalityTestPage() {
     return (
       <div className="flex flex-col items-center justify-center py-40 space-y-8">
         <div className="relative">
-          <Loader2 className="w-24 h-24 text-magenta-500 animate-spin" />
+          <motion.div 
+            animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          >
+            <Loader2 className="w-24 h-24 text-magenta-500" />
+          </motion.div>
           <Binary className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-cyan-500 animate-pulse" />
+          <motion.div 
+            className="absolute inset-0 rounded-full border-4 border-cyan-500 shadow-neon-cyan"
+            animate={{ opacity: [0, 0.5, 0], scale: [1, 1.5, 2] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          />
         </div>
         <div className="text-center space-y-2">
-          <p className="text-magenta-500 font-mono text-2xl animate-pulse tracking-tighter uppercase italic">DECODING_NEURAL_SIGNATURE...</p>
-          <p className="text-cyan-500 font-mono text-xs opacity-50 uppercase">Accessing {testMode} logic gates</p>
+          <p className="text-magenta-500 font-mono text-2xl animate-pulse tracking-tighter uppercase italic neon-text-magenta">DECODING_NEURAL_SIGNATURE...</p>
+          <div className="flex justify-center gap-1">
+             {Array.from({ length: 12 }).map((_, i) => (
+               <motion.div key={i} className="w-1 h-4 bg-cyan-500" animate={{ scaleY: [1, 2, 1] }} transition={{ repeat: Infinity, delay: i * 0.1 }} />
+             ))}
+          </div>
+          <p className="text-cyan-500 font-mono text-xs opacity-50 uppercase tracking-widest">Parsing {testMode} logic gates</p>
         </div>
       </div>
     );

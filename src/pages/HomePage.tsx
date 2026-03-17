@@ -13,6 +13,7 @@ export function HomePage() {
   const dict = I18N[language];
   const [typedText, setTypedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const selectedSign = useMemo(() =>
     ZODIAC_SIGNS.find((s) => s.id === selectedSignId),
     [selectedSignId]
@@ -21,10 +22,12 @@ export function HomePage() {
     if (!selectedSign) {
       setTypedText('');
       setIsTyping(false);
+      setShowAnalysis(false);
       return;
     }
     setTypedText('');
     setIsTyping(true);
+    setShowAnalysis(false);
     let i = 0;
     const fullText = selectedSign.horoscopes[language];
     const timer = setInterval(() => {
@@ -33,8 +36,10 @@ export function HomePage() {
       if (i >= fullText.length) {
         clearInterval(timer);
         setIsTyping(false);
+        // Delay the appearance of the deep scan until reading is likely finished
+        setTimeout(() => setShowAnalysis(true), 800);
       }
-    }, 20);
+    }, 25); // Slightly slower for better readability
     return () => {
       clearInterval(timer);
       setIsTyping(false);
@@ -109,7 +114,7 @@ export function HomePage() {
             <span className="text-6xl neon-text-cyan">{selectedSign.symbol}</span>
             <span className="font-retro uppercase underline decoration-double tracking-tighter">{selectedSign.names[language]}</span>
           </div>
-          <div className="text-2xl leading-relaxed italic border-l-4 border-cyan-500 pl-6 py-4 bg-cyan-500/5 min-h-[6rem]">
+          <div className="text-2xl leading-relaxed italic border-l-4 border-cyan-500 pl-6 py-4 bg-cyan-500/5 min-h-[6rem] neon-text-cyan">
             {typedText}
             {isTyping && <span className="animate-pulse inline-block w-3 h-6 bg-cyan-500 ml-2" />}
           </div>
@@ -132,12 +137,12 @@ export function HomePage() {
         </div>
       </Card>
       <AnimatePresence>
-        {selectedSignId && (
+        {showAnalysis && selectedSignId && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            transition={{ delay: 1 }}
+            initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
+            transition={{ duration: 0.5 }}
           >
             <DeepScanPanel signId={selectedSign.id} />
           </motion.div>

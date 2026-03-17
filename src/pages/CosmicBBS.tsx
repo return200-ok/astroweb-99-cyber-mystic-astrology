@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAstroStore } from '@/lib/store';
 import { ZODIAC_SIGNS, I18N } from '@shared/astrology-data';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,10 @@ export function CosmicBBS() {
     queryKey: ['bbs-messages'],
     queryFn: () => api<{ items: GuestbookEntry[] }>('/api/bbs'),
   });
+  const sortedMessages = useMemo(() => {
+    if (!bbsData?.items) return [];
+    return [...bbsData.items].sort((a, b) => b.ts - a.ts);
+  }, [bbsData]);
   const postMutation = useMutation({
     mutationFn: (newEntry: Partial<GuestbookEntry>) =>
       api<GuestbookEntry>('/api/bbs', {
@@ -77,44 +81,65 @@ export function CosmicBBS() {
           <div className="space-y-2">
             <label className="text-magenta-500 text-xs font-mono uppercase">{dict.messagePacket}</label>
             <Textarea
-              placeholder="..."
+              placeholder="ENTER COSMIC DATA..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className="bg-black border-magenta-500 text-magenta-500 placeholder:text-magenta-900 rounded-none min-h-[100px] focus:ring-1 focus:ring-magenta-500"
             />
           </div>
-          <Button type="submit" disabled={postMutation.isPending || !author || !message || !localSignId} className="w-full bg-magenta-500 text-black hover:bg-magenta-400 font-bold rounded-none uppercase">
+          <Button type="submit" disabled={postMutation.isPending || !author || !message || !localSignId} className="w-full bg-magenta-500 text-black hover:bg-magenta-400 font-bold rounded-none uppercase transition-all shadow-neon hover:shadow-[0_0_20px_#ff00ff]">
             {postMutation.isPending ? <Loader2 className="animate-spin" /> : <Send className="mr-2 w-4 h-4" />}
             {postMutation.isPending ? dict.transmitting : dict.transmit}
           </Button>
         </form>
       </Card>
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-cyan-500 font-mono underline uppercase italic tracking-tighter">{dict.incomingStreams}</h2>
+        <h2 className="text-2xl font-bold text-cyan-500 font-mono underline uppercase italic tracking-tighter flex items-center gap-2">
+          <div className="w-2 h-6 bg-cyan-500 animate-pulse" />
+          {dict.incomingStreams}
+        </h2>
         {isLoading ? (
-          <div className="flex justify-center py-20"><Loader2 className="w-12 h-12 text-magenta-500 animate-spin" /></div>
+          <div className="flex justify-center py-20">
+            <div className="relative">
+              <Loader2 className="w-12 h-12 text-magenta-500 animate-spin" />
+              <div className="absolute inset-0 bg-magenta-500/20 blur-xl animate-pulse" />
+            </div>
+          </div>
         ) : (
           <div className="grid gap-4">
             <AnimatePresence initial={false}>
-              {bbsData?.items.map((entry) => {
+              {sortedMessages.map((entry) => {
                 const sign = ZODIAC_SIGNS.find(s => s.id === entry.signId);
                 return (
-                  <motion.div key={entry.id} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="border-l-4 border-magenta-500 bg-magenta-500/5 p-4 space-y-2 group hover:bg-magenta-500/10 transition-colors">
+                  <motion.div 
+                    key={entry.id} 
+                    initial={{ x: -20, opacity: 0 }} 
+                    animate={{ x: 0, opacity: 1 }} 
+                    className="border-l-4 border-magenta-500 bg-magenta-500/5 p-4 space-y-2 group hover:bg-magenta-500/10 transition-colors relative"
+                  >
                     <div className="flex justify-between items-start">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 flex items-center justify-center border border-magenta-500 text-lg">{sign?.symbol || '?'}</div>
+                        <div className="w-8 h-8 flex items-center justify-center border border-magenta-500 text-lg bg-black">{sign?.symbol || '?'}</div>
                         <div>
-                          <span className="text-magenta-500 font-bold uppercase">{entry.author}</span>
-                          <span className="text-magenta-500/40 text-xs ml-2 font-mono">[{new Date(entry.ts).toLocaleTimeString()}]</span>
+                          <span className="text-magenta-500 font-bold uppercase tracking-tighter">{entry.author}</span>
+                          <span className="text-magenta-500/40 text-[10px] ml-2 font-mono">[{new Date(entry.ts).toLocaleString()}]</span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-magenta-500 font-mono text-lg pl-10">&gt; {entry.message}</p>
+                    <p className="text-magenta-500 font-mono text-lg pl-10 leading-relaxed">&gt; {entry.message}</p>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 opacity-0 group-hover:opacity-10 pointer-events-none">
+                       <MessageSquare className="w-full h-full text-magenta-500" />
+                    </div>
                   </motion.div>
                 );
               })}
             </AnimatePresence>
-            {!bbsData?.items.length && <div className="text-center py-20 border-2 border-dashed border-magenta-900 text-magenta-900 font-mono uppercase">{dict.emptyBBS}</div>}
+            {!sortedMessages.length && (
+              <div className="text-center py-20 border-2 border-dashed border-magenta-900 text-magenta-900 font-mono uppercase">
+                <p className="animate-pulse">ERROR 404: CELESTIAL_VOICE_NOT_FOUND</p>
+                <p className="text-xs mt-2 opacity-50">{dict.emptyBBS}</p>
+              </div>
+            )}
           </div>
         )}
       </div>
