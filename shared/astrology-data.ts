@@ -53,6 +53,16 @@ export const I18N: Record<Language, I18nDictionary> = {
     activeWing: "ACTIVE_WING",
     typeProfile: "NEURAL_PROFILE",
     adviceProtocol: "ADVICE_PROTOCOL",
+    navTuvi: "TỬ VI",
+    tuviTitle: "Astral Imperial",
+    tuviSub: "EASTERN CELESTIAL MAPPING v9.0",
+    birthDate: "D.O.B",
+    birthHour: "HOUR_BRANCH",
+    lunarDate: "LUNAR_SYNC",
+    ownerName: "ENTITY_ID",
+    calculateChart: "CAST_CHART",
+    palaceNames: PALACE_ORDER_VN,
+    starNames: {},
   },
   vi: {
     terminalTitle: "Trạm Astral",
@@ -107,6 +117,16 @@ export const I18N: Record<Language, I18nDictionary> = {
     activeWing: "CÁNH_HOẠT_ĐỘNG",
     typeProfile: "HỒ_SƠ_THẦN_KINH",
     adviceProtocol: "GIAO_THỨC_LỜI_KHUYÊN",
+    navTuvi: "TỬ VI",
+    tuviTitle: "Tử Vi Đẩu Số",
+    tuviSub: "BẢN ĐỒ THIÊN HÀ PHƯƠNG ĐÔNG v9.0",
+    birthDate: "NGÀY SINH",
+    birthHour: "GIỜ SINH",
+    lunarDate: "ÂM LỊCH",
+    ownerName: "TÊN GIA CHỦ",
+    calculateChart: "LẬP LÁ SỐ",
+    palaceNames: PALACE_ORDER_VN,
+    starNames: {},
   }
 };
 export const ENNEAGRAM_METADATA: Record<EnneagramType, EnneagramMetadata> = {

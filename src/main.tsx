@@ -15,6 +15,7 @@ import { HomePage } from '@/pages/HomePage'
 import { CompatibilityPage } from '@/pages/CompatibilityPage'
 import { CosmicBBS } from '@/pages/CosmicBBS'
 import { PersonalityTestPage } from '@/pages/PersonalityTestPage'
+import { TuviPage } from '@/pages/TuviPage'
 import { RetroLayout } from '@/components/layout/RetroLayout'
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +39,11 @@ const router = createBrowserRouter([
   {
     path: "/test",
     element: <RetroLayout><PersonalityTestPage /></RetroLayout>,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/tuvi",
+    element: <RetroLayout><TuviPage /></RetroLayout>,
     errorElement: <RouteErrorBoundary />,
   },
   {
