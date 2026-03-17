@@ -5,31 +5,34 @@ export default {
   theme: {
   	extend: {
   		fontFamily: {
-  			retro: ['VT323', 'monospace'],
-  			mono: ['Space Mono', 'monospace'],
+  			mystic: ['Cinzel', 'serif'],
+  			serif: ['Spectral', 'serif'],
   		},
   		colors: {
-  			background: '#09090b',
-  			foreground: '#ffffff',
-  			magenta: {
-  				500: '#ff00ff',
+  			background: '#1e1b4b',
+  			foreground: '#e0e7ff',
+  			gold: {
+  				400: '#ffdf4d',
+  				500: '#ffd700',
+  				600: '#ccac00',
   			},
-  			cyan: {
-  				500: '#00f3ff',
+  			indigo: {
+  				900: '#1e1b4b',
+  				950: '#0f0d2b',
   			},
   			primary: {
-  				DEFAULT: '#ff00ff',
-  				foreground: '#ffffff',
+  				DEFAULT: '#ffd700',
+  				foreground: '#1e1b4b',
   			},
   			secondary: {
-  				DEFAULT: '#00f3ff',
-  				foreground: '#000000',
+  				DEFAULT: '#e0e7ff',
+  				foreground: '#1e1b4b',
   			},
-  			border: '#ff00ff',
+  			border: '#ffd700',
   		},
   		boxShadow: {
-  			neon: '0 0 10px #ff00ff',
-  			'neon-cyan': '0 0 10px #00f3ff',
+  			'ethereal-glow': '0 0 15px rgba(255, 215, 0, 0.3)',
+  			'inner-glow': 'inset 0 0 10px rgba(255, 215, 0, 0.2)',
   		}
   	}
   },
