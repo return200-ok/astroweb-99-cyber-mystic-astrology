@@ -13,8 +13,16 @@ import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { CompatibilityPage } from '@/pages/CompatibilityPage'
+import { CosmicBBS } from '@/pages/CosmicBBS'
 import { RetroLayout } from '@/components/layout/RetroLayout'
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 const router = createBrowserRouter([
   {
     path: "/",
@@ -24,6 +32,11 @@ const router = createBrowserRouter([
   {
     path: "/matchmaker",
     element: <RetroLayout><CompatibilityPage /></RetroLayout>,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/bbs",
+    element: <RetroLayout><CosmicBBS /></RetroLayout>,
     errorElement: <RouteErrorBoundary />,
   },
 ]);
