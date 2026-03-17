@@ -23,10 +23,12 @@ export function HomePage() {
       setIsTyping(false);
       return;
     }
+    // Reset state before starting new animation
     setTypedText('');
     setIsTyping(true);
     let i = 0;
     const fullText = selectedSign.horoscopes[language];
+    // Cleanup reference for the interval
     const timer = setInterval(() => {
       setTypedText(fullText.slice(0, i + 1));
       i++;
@@ -34,9 +36,12 @@ export function HomePage() {
         clearInterval(timer);
         setIsTyping(false);
       }
-    }, 30);
-    return () => clearInterval(timer);
-  }, [selectedSignId, selectedSign, language]);
+    }, 25); // Slightly faster typing for better UX
+    return () => {
+      clearInterval(timer);
+      setIsTyping(false);
+    };
+  }, [selectedSignId, language, selectedSign]);
   if (!selectedSign) {
     return (
       <div className="space-y-10">
@@ -91,10 +96,10 @@ export function HomePage() {
           </div>
           <div className="text-xl leading-relaxed border-l-2 border-cyan-500/30 pl-4 py-2 min-h-[4rem]">
             {typedText}
-            {isTyping && <span className="animate-pulse">_</span>}
+            {isTyping && <span className="animate-pulse inline-block w-2 h-5 bg-cyan-500 ml-1" />}
           </div>
           <div className="pt-8 flex justify-between items-end">
-            <div className="text-[10px] opacity-40 uppercase leading-tight">
+            <div className="text-[10px] opacity-40 uppercase leading-tight font-mono">
               CRC Check: OK<br />
               Status: Future Secured<br />
               Encryption: RSA-99-CRYPTO
@@ -103,7 +108,7 @@ export function HomePage() {
               variant="outline"
               size="sm"
               onClick={() => setSelectedSignId(null)}
-              className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black rounded-none h-auto py-1 px-4 font-bold"
+              className="border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black rounded-none h-auto py-1 px-4 font-bold uppercase tracking-widest"
             >
               <RefreshCcw className="w-4 h-4 mr-2" />
               {dict.rebootSystem}
