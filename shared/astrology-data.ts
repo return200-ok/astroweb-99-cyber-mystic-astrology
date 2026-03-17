@@ -97,10 +97,10 @@ export const I18N: Record<Language, I18nDictionary> = {
     likert5: "Rất đồng ý",
   }
 };
-export const TRAIT_METADATA: Record<BigFiveTrait, { 
-  name: Record<Language, string>, 
-  highDesc: Record<Language, string>, 
-  lowDesc: Record<Language, string> 
+export const TRAIT_METADATA: Record<BigFiveTrait, {
+  name: Record<Language, string>,
+  highDesc: Record<Language, string>,
+  lowDesc: Record<Language, string>
 }> = {
   openness: {
     name: { en: "Openness", vi: "Cởi Mở" },
@@ -162,8 +162,8 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Aries', vi: 'Bạch Dương' },
     dates: { en: 'Mar 21 - Apr 19', vi: '21/03 - 19/04' },
     horoscopes: {
-      en: 'SYSTEM ALERT: Your energy levels are spiking. A new subroutine in your career path is initiating.',
-      vi: 'CẢNH BÁO HỆ THỐNG: Mức năng lượng của bạn đang tăng vọt. Một quy trình mới trong sự nghiệp đang bắt đầu.'
+      en: 'SYSTEM ALERT: Your energy levels are spiking. A new subroutine in your career path is initiating. Execute bold commands now.',
+      vi: 'CẢNH BÁO HỆ THỐNG: Mức năng lượng của bạn đang tăng vọt. Một quy trình mới trong sự nghiệp đang bắt đầu. Thực thi ngay.'
     },
     analysis: {
       en: {
@@ -190,7 +190,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Taurus', vi: 'Kim Ngưu' },
     dates: { en: 'Apr 20 - May 20', vi: '20/04 - 20/05' },
     horoscopes: {
-      en: 'STABILITY DETECTED: Hard drive sectors are being optimized. Focus on material data acquisition.',
+      en: 'STABILITY DETECTED: Hard drive sectors are being optimized. Focus on material data acquisition and sensory comfort.',
       vi: 'PHÁT HIỆN ỔN ĐỊNH: Các phân vùng ổ cứng đang được tối ưu hóa. Tập trung vào việc thu thập dữ liệu vật chất.'
     },
     analysis: {
@@ -218,7 +218,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Gemini', vi: 'Song Tử' },
     dates: { en: 'May 21 - Jun 20', vi: '21/05 - 20/06' },
     horoscopes: {
-      en: 'DUAL PROCESSING: Communication channels are buzzing. Expect incoming packets from multiple sources.',
+      en: 'DUAL PROCESSING: Communication channels are buzzing. Expect incoming packets from multiple nodes simultaneously.',
       vi: 'XỬ LÝ KÉP: Các kênh giao tiếp đang xôn xao. Hãy chờ đợi các gói dữ liệu từ nhiều nguồn khác nhau.'
     },
     analysis: {
@@ -246,7 +246,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Cancer', vi: 'Cự Giải' },
     dates: { en: 'Jun 21 - Jul 22', vi: '21/06 - 22/07' },
     horoscopes: {
-      en: 'FIREWALL ACTIVE: Emotional defenses are high. Your inner database requires a deep backup.',
+      en: 'FIREWALL ACTIVE: Emotional defenses are high. Your inner database requires a deep backup and nurturing protocols.',
       vi: 'TƯỜNG LỬA KÍCH HOẠT: Hệ phòng thủ cảm xúc đang cao. Cơ sở dữ liệu nội tại cần được sao lưu sâu.'
     },
     analysis: {
@@ -274,7 +274,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Leo', vi: 'Sư Tử' },
     dates: { en: 'Jul 23 - Aug 22', vi: '23/07 - 22/08' },
     horoscopes: {
-      en: 'MAINFRAME DOMINANCE: Your charisma is overloading the network. A leadership position is opening.',
+      en: 'MAINFRAME DOMINANCE: Your charisma is overloading the network. A leadership position is opening in your local hub.',
       vi: 'ƯU THẾ HỆ THỐNG: Sức hút của bạn đang làm quá tải mạng lưới. Một vị trí lãnh đạo đang mở ra.'
     },
     analysis: {
@@ -302,7 +302,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Virgo', vi: 'Xử Nữ' },
     dates: { en: 'Aug 23 - Sep 22', vi: '23/08 - 22/09' },
     horoscopes: {
-      en: 'DEBUGGING COMPLETE: All errors in your environment have been logged. Perfection is within reach.',
+      en: 'DEBUGGING COMPLETE: All errors in your environment have been logged. Perfection is within your processing range.',
       vi: 'HOÀN TẤT GỠ LỖI: Tất cả các lỗi trong môi trường đã được ghi lại. Sự hoàn hảo đang trong tầm tay.'
     },
     analysis: {
@@ -330,7 +330,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Libra', vi: 'Thiên Bình' },
     dates: { en: 'Sep 23 - Oct 22', vi: '23/09 - 22/10' },
     horoscopes: {
-      en: 'LOAD BALANCER: Harmony is being restored to your workspace. Expect a new partnership request.',
+      en: 'LOAD BALANCER: Harmony is being restored to your workspace. Expect a new partnership request on your port.',
       vi: 'BỘ CÂN BẰNG TẢI: Sự hài hòa đang được khôi phục. Hãy chờ đợi một yêu cầu hợp tác mới.'
     },
     analysis: {
@@ -358,7 +358,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Scorpio', vi: 'Bọ Cạp' },
     dates: { en: 'Oct 23 - Nov 21', vi: '23/10 - 21/11' },
     horoscopes: {
-      en: 'DEEP PACKET INSPECTION: You see through the encrypted layers of others. Trust your core intuition.',
+      en: 'DEEP PACKET INSPECTION: You see through encrypted layers. Trust your intuition to bypass firewall traps.',
       vi: 'QUÉT GÓI TIN SÂU: Bạn nhìn thấu các lớp mã hóa của người khác. Hãy tin vào trực giác cốt lõi.'
     },
     analysis: {
@@ -386,7 +386,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Sagittarius', vi: 'Nhân Mã' },
     dates: { en: 'Nov 22 - Dec 21', vi: '22/11 - 21/12' },
     horoscopes: {
-      en: 'NETWORK EXPANSION: Your bandwidth is growing. Explore remote nodes and acquire new philosophies.',
+      en: 'NETWORK EXPANSION: Your bandwidth is growing. Explore remote nodes and acquire new high-level philosophies.',
       vi: 'MỞ RỘNG MẠNG LƯỚI: Băng thông của bạn đang tăng. Hãy khám phá các nút từ xa và triết lý mới.'
     },
     analysis: {
@@ -414,7 +414,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Capricorn', vi: 'Ma Kết' },
     dates: { en: 'Dec 22 - Jan 19', vi: '22/12 - 19/01' },
     horoscopes: {
-      en: 'UPTIME MAXIMIZED: Your efficiency is at record highs. The architectural structure of your life is solid.',
+      en: 'UPTIME MAXIMIZED: Your efficiency is at record highs. The architectural structure of your life is verified [OK].',
       vi: 'TỐI ĐA THỜI GIAN HOẠT ĐỘNG: Hiệu suất của bạn đạt mức kỷ lục. Cấu trúc cuộc sống của bạn rất vững chắc.'
     },
     analysis: {
@@ -442,7 +442,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Aquarius', vi: 'Bảo Bình' },
     dates: { en: 'Jan 20 - Feb 18', vi: '20/01 - 18/02' },
     horoscopes: {
-      en: 'UPGRADE AVAILABLE: A radical new update to your personal OS is ready for installation. Embrace the glitch.',
+      en: 'UPGRADE AVAILABLE: A radical new update to your personal OS is ready for installation. Embrace the glitch factor.',
       vi: 'CẬP NHẬT CÓ SẴN: Một bản nâng cấp triệt để cho hệ điều hành cá nhân đã sẵn sàng. Hãy chấp nhận lỗi hệ thống.'
     },
     analysis: {
@@ -470,7 +470,7 @@ export const ZODIAC_SIGNS: ZodiacSign[] = [
     names: { en: 'Pisces', vi: 'Song Ngư' },
     dates: { en: 'Feb 19 - Mar 20', vi: '19/02 - 20/03' },
     horoscopes: {
-      en: 'VIRTUAL REALITY: Your dreams are blending with real-world data. Navigate the mist with compassion.',
+      en: 'VIRTUAL REALITY: Your dreams are blending with real-world data. Navigate the mist with high-level compassion.',
       vi: 'THỰC TẾ ẢO: Giấc mơ của bạn đang hòa quyện với dữ liệu thực tế. Hãy định hướng trong làn sương bằng lòng trắc ẩn.'
     },
     analysis: {
