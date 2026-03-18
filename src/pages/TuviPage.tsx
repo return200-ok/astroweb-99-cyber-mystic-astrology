@@ -16,13 +16,12 @@ import { toast } from 'sonner';
 export function TuviPage() {
   const language = useAstroStore(s => s.language);
   const dict = I18N[language];
-  // Tab 1: Chart State
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   const [hour, setHour] = useState(0);
   const [chart, setChart] = useState<TuviChart | null>(null);
   const [isCasting, setIsCasting] = useState(false);
-  // Tab 2: Age State
+  const [isExporting, setIsExporting] = useState(false);
   const [ageForm, setAgeForm] = useState({
     nameA: '', dobA: '', hourA: 0,
     nameB: '', dobB: '', hourB: 0,
@@ -30,7 +29,6 @@ export function TuviPage() {
   });
   const [ageResult, setAgeResult] = useState<AgeCompatResponse | null>(null);
   const [isComparing, setIsComparing] = useState(false);
-  // Tab 3: Calendar State
   const [calForm, setCalForm] = useState({
     start: '', end: '', purpose: 'opening' as ImperialEventType
   });
@@ -58,7 +56,7 @@ export function TuviPage() {
         })
       });
       setAgeResult(res);
-    } catch (e) { 
+    } catch (e) {
       console.error(e);
       toast.error("Failed to calculate cosmic alignment.");
     }
@@ -78,29 +76,33 @@ export function TuviPage() {
       });
       setCalResults(res);
       toast.success(`${res.length} auspicious windows found.`);
-    } catch (e) { 
+    } catch (e) {
       console.error(e);
       toast.error("Failed to seek auspicious windows.");
     }
     setIsSearching(false);
   };
-  const exportChart = () => {
+  const exportChart = async () => {
     const node = document.getElementById('tuvi-chart-grid');
     if (node) {
+      setIsExporting(true);
       toast.info("Capturing astral projection...");
-      toPng(node, {
-        backgroundColor: '#1e1b4b',
-        pixelRatio: 2,
-      }).then((dataUrl) => {
+      try {
+        const dataUrl = await toPng(node, {
+          backgroundColor: '#1e1b4b',
+          pixelRatio: 2,
+        });
         const link = document.createElement('a');
         link.download = `IMPERIAL_CHART_${name || 'SPIRIT'}.png`;
         link.href = dataUrl;
         link.click();
         toast.success("Chart exported to physical realm.");
-      }).catch(err => {
+      } catch (err) {
         console.error("Export error:", err);
         toast.error("Failed to export chart. The stars are elusive.");
-      });
+      } finally {
+        setIsExporting(false);
+      }
     }
   };
   return (
@@ -144,9 +146,9 @@ export function TuviPage() {
             ) : (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                 <div id="tuvi-chart-grid" className="grid grid-cols-4 grid-rows-4 gap-1 aspect-square w-full max-w-4xl mx-auto bg-indigo-950 border-2 border-gold-500/50 p-1 relative shadow-ethereal-glow overflow-hidden">
-                  <div className="col-start-2 col-end-4 row-start-2 row-end-4 bg-indigo-900/90 flex flex-col items-center justify-center text-center p-6 border-2 border-gold-500 z-10">
-                    <h3 className="text-2xl font-mystic font-bold text-gold-500 uppercase">{chart.ownerName}</h3>
-                    <div className="text-[10px] text-gold-500/60 mt-4 space-y-1">
+                  <div className="col-start-2 col-end-4 row-start-2 row-end-4 bg-indigo-900/90 flex flex-col items-center justify-center text-center p-4 sm:p-6 border-2 border-gold-500 z-10">
+                    <h3 className="text-lg sm:text-2xl font-mystic font-bold text-gold-500 uppercase">{chart.ownerName}</h3>
+                    <div className="text-[8px] sm:text-[10px] text-gold-500/60 mt-2 sm:mt-4 space-y-1">
                       <p>SOLAR: {new Date(chart.birthDate).toLocaleDateString()}</p>
                       <p>LUNAR: {chart.lunarDate}</p>
                       <p className="text-gold-500 font-mystic pt-2 uppercase tracking-widest">Element: {chart.menhElement}</p>
@@ -160,10 +162,18 @@ export function TuviPage() {
                       {r: 1, c: 1}, {r: 1, c: 2}, {r: 1, c: 3}, {r: 1, c: 4}
                     ][idx];
                     return (
-                      <div key={pid} style={{ gridRow: gridStyles.r, gridColumn: gridStyles.c }} className="border border-gold-500/10 p-2 flex flex-col relative bg-indigo-950/40">
-                        <span className="text-[8px] font-mystic font-bold text-gold-500 uppercase">{p.name}</span>
-                        <div className="flex-1 overflow-y-auto space-y-0.5 mt-1">
-                          {p.stars.map((s, si) => <div key={si} style={{ color: WUXING_COLORS[s.wuxing] }} className="text-[9px] font-bold leading-none uppercase">{s.name}</div>)}
+                      <div key={pid} style={{ gridRow: gridStyles.r, gridColumn: gridStyles.c }} className="border border-gold-500/10 p-1.5 sm:p-2 flex flex-col relative bg-indigo-950/40">
+                        <span className="text-[7px] sm:text-[8px] font-mystic font-bold text-gold-500 uppercase truncate">{p.name}</span>
+                        <div className="flex-1 overflow-y-auto space-y-0.5 mt-1 custom-scrollbar">
+                          {p.stars.map((s, si) => (
+                            <div 
+                              key={si} 
+                              style={{ color: WUXING_COLORS[s.wuxing] }} 
+                              className="text-[clamp(7px,1.5vw,10px)] font-bold leading-none uppercase break-all hyphens-auto"
+                            >
+                              {s.name}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     );
@@ -173,8 +183,12 @@ export function TuviPage() {
                    <Button variant="outline" onClick={() => setChart(null)} className="border-gold-500/50 text-gold-500 rounded-full font-mystic uppercase h-12 px-8">
                      <RotateCcw className="mr-2 w-4 h-4" /> RE-CAST
                    </Button>
-                   <Button onClick={exportChart} className="bg-gold-500 text-indigo-900 rounded-full font-mystic uppercase h-12 px-8 shadow-ethereal-glow">
-                     <Download className="mr-2 w-4 h-4" /> EXPORT
+                   <Button 
+                    onClick={exportChart} 
+                    disabled={isExporting}
+                    className="bg-gold-500 text-indigo-900 rounded-full font-mystic uppercase h-12 px-8 shadow-ethereal-glow"
+                   >
+                     {isExporting ? <Loader2 className="animate-spin mr-2" /> : <Download className="mr-2 w-4 h-4" />} EXPORT
                    </Button>
                 </div>
               </motion.div>

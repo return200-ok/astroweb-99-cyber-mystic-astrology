@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAstroStore } from '@/lib/store';
 import { I18N } from '@shared/astrology-data';
@@ -12,9 +12,12 @@ import { api } from '@/lib/api-client';
 import { IChingLineType, IChingResult } from '@shared/types';
 import { IChingCastingAltar } from '@/components/IChingCastingAltar';
 import { toast } from 'sonner';
+// Reusable audio context to avoid repeated initialization issues
+let audioCtx: AudioContext | null = null;
 export function IChingPage() {
   const language = useAstroStore(s => s.language);
   const dict = I18N[language];
+  const altarRef = useRef<HTMLDivElement>(null);
   const [question, setQuestion] = useState("");
   const [isCasting, setIsCasting] = useState(false);
   const [lines, setLines] = useState<IChingLineType[]>([]);
@@ -24,10 +27,13 @@ export function IChingPage() {
     try {
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) return;
-      const ctx = new AudioContextClass();
-      if (ctx.state === 'suspended') {
-        ctx.resume().catch(() => {});
+      if (!audioCtx) {
+        audioCtx = new AudioContextClass();
       }
+      if (audioCtx?.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      const ctx = audioCtx!;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -49,12 +55,19 @@ export function IChingPage() {
       toast.error("The Oracle requires a query.");
       return;
     }
+    // Ensure audio context is resumed on user gesture
+    if (audioCtx?.state === 'suspended') {
+      audioCtx.resume();
+    }
     setIsCasting(true);
     setResult(null);
     setLines([]);
+    // Smooth scroll to altar for mobile users
+    if (altarRef.current) {
+      altarRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     toast.info("Entering ritual state...");
     const newLines: IChingLineType[] = [];
-    // Interval adjusted to allow stalks to overlap and fall gracefully
     for (let i = 0; i < 6; i++) {
       await new Promise(r => setTimeout(r, 900));
       const nextLine = castLine();
@@ -158,7 +171,7 @@ export function IChingPage() {
             )}
           </AnimatePresence>
         </div>
-        <div className="flex justify-center items-center">
+        <div ref={altarRef} className="flex justify-center items-center">
           <IChingCastingAltar lines={lines} isCasting={isCasting} />
         </div>
       </div>
@@ -176,16 +189,16 @@ export function IChingPage() {
                   </h2>
                   <div className="h-0.5 w-24 bg-gold-500/30 mx-auto rounded-full" />
                 </div>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-gold-500 font-serif text-3xl italic leading-relaxed px-4"
+                  className="text-gold-500 font-serif text-2xl sm:text-3xl italic leading-relaxed px-4"
                 >
                   “{result.summary}”
                 </motion.p>
                 <div className="w-full space-y-8 text-left">
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
@@ -198,7 +211,7 @@ export function IChingPage() {
                       {result.analysis}
                     </p>
                   </motion.div>
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9 }}
@@ -229,9 +242,9 @@ export function IChingPage() {
                   <Button
                     variant="ghost"
                     onClick={handleReset}
-                    className="group text-gold-500/40 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest hover:bg-gold-500/5 px-12 py-8 rounded-full transition-all hover:shadow-[0_0_15px_rgba(255,215,0,0.1)]"
+                    className="group text-gold-500/60 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest hover:bg-gold-500/5 px-12 py-8 rounded-full transition-all hover:shadow-[0_0_15px_rgba(255,215,0,0.1)]"
                   >
-                    <RotateCcw className="w-3 h-3 mr-2 group-hover:rotate-[-45deg] transition-transform" /> 
+                    <RotateCcw className="w-3 h-3 mr-2 group-hover:rotate-[-45deg] transition-transform" />
                     Return to Silence
                   </Button>
                 </div>
