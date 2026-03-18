@@ -12,18 +12,14 @@ const Stalk = ({ index, line, isLanding }: StalkProps) => {
   const randomX = useMemo(() => Math.floor(Math.random() * 40) - 20, []);
   const randomRotate = useMemo(() => Math.floor(Math.random() * 30) - 15, []);
   const isYin = line === 6 || line === 8;
-  // Sine-wave oscillation for X-axis (wind sway during fall)
-  const xOscillation = [randomX, randomX + 4, randomX - 4, randomX + 2, 0];
-  const rotateOscillation = [randomRotate, randomRotate + 5, randomRotate - 5, 0];
   return (
-    <div className="relative flex flex-col items-center w-full h-12 will-change-transform">
+    <div className="relative flex flex-col items-center w-full h-12">
       {/* Ghostly Line Reveal beneath the stalk */}
       <AnimatePresence>
         {isLanding && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: [0.215, 0.61, 0.355, 1] }}
             className="absolute inset-0 flex items-center justify-center gap-4 px-4 pointer-events-none"
           >
             {isYin ? (
@@ -38,54 +34,32 @@ const Stalk = ({ index, line, isLanding }: StalkProps) => {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* The Mystic Grass Stalk with Refined Physics */}
+      {/* The Mystic Grass Stalk */}
       <motion.div
-        initial={{ y: -600, x: randomX, rotate: randomRotate, opacity: 0 }}
-        animate={{
-          y: 0,
-          x: xOscillation,
-          rotate: rotateOscillation,
+        initial={{ y: -500, x: randomX, rotate: randomRotate, opacity: 0 }}
+        animate={{ 
+          y: 0, 
+          x: 0, 
+          rotate: 0, 
           opacity: 1,
-        }}
-        transition={{
-          y: {
-            type: "spring",
-            damping: 22,
-            stiffness: 35,
-            restDelta: 0.001,
-            delay: 0.1
-          },
-          x: {
-            duration: 1.5,
-            times: [0, 0.3, 0.6, 0.8, 1],
-            ease: [0.215, 0.61, 0.355, 1]
-          },
-          rotate: {
-            duration: 1.5,
-            times: [0, 0.3, 0.6, 1],
-            ease: "easeInOut"
-          },
-          opacity: {
-            duration: 0.6,
-            ease: "linear"
-          }
+          transition: { type: "spring", damping: 15, stiffness: 60, delay: 0.1 }
         }}
         className={cn(
           "relative z-20 w-1.5 h-16 rounded-full shadow-lg",
-          "bg-gradient-to-b from-emerald-400 via-emerald-600 to-emerald-900",
+          "bg-gradient-to-b from-emerald-400 via-forest-600 to-emerald-900",
           "border border-emerald-300/20"
         )}
       >
         {/* Glowing Tip */}
-        <motion.div
-          animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.1, 1] }}
-          transition={{ repeat: Infinity, duration: 3 }}
-          className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-gold-400 rounded-full blur-sm shadow-ethereal-glow"
+        <motion.div 
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-gold-400 rounded-full blur-sm shadow-ethereal-glow" 
         />
         {/* Subtle Wind Sway once landed */}
         <motion.div
-          animate={{ rotate: [-0.8, 0.8, -0.8] }}
-          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+          animate={{ rotate: [-1, 1, -1] }}
+          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           className="w-full h-full"
         />
       </motion.div>
@@ -97,6 +71,8 @@ interface IChingCastingAltarProps {
   isCasting: boolean;
 }
 export function IChingCastingAltar({ lines, isCasting }: IChingCastingAltarProps) {
+  // We reverse lines for the altar display because I Ching lines are built from bottom to top
+  const displayLines = useMemo(() => [...lines].reverse(), [lines]);
   return (
     <div className="relative w-full max-w-lg mx-auto aspect-[3/4] sm:aspect-square bg-gradient-to-b from-indigo-950/20 to-indigo-900/40 rounded-[3rem] border border-gold-500/10 overflow-hidden shadow-inner-glow flex flex-col items-center justify-center p-8 gap-4">
       {/* Constellation SVG Overlay */}
@@ -113,6 +89,7 @@ export function IChingCastingAltar({ lines, isCasting }: IChingCastingAltarProps
         {/* Draw lines between landed stalks */}
         {lines.length > 1 && lines.map((_, i) => {
           if (i === 0) return null;
+          // Calculate positions for 6 slots in the center
           const getY = (idx: number) => 350 - (idx * 60);
           const x = 200;
           return (
@@ -120,7 +97,7 @@ export function IChingCastingAltar({ lines, isCasting }: IChingCastingAltarProps
               key={`constellation-${i}`}
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 0.4 }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
+              transition={{ duration: 1 }}
               x1={x}
               y1={getY(i - 1)}
               x2={x}
@@ -135,8 +112,8 @@ export function IChingCastingAltar({ lines, isCasting }: IChingCastingAltarProps
       </svg>
       {/* Altar Surface Patterns */}
       <div className="absolute inset-0 opacity-5 pointer-events-none select-none flex items-center justify-center">
-        <div className="w-64 h-64 border-2 border-gold-500 rounded-full animate-[spin_25s_linear_infinite]" />
-        <div className="absolute w-48 h-48 border border-gold-500 rounded-full animate-[spin_18s_linear_infinite_reverse]" />
+        <div className="w-64 h-64 border-2 border-gold-500 rounded-full animate-[spin_20s_linear_infinite]" />
+        <div className="absolute w-48 h-48 border border-gold-500 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
       </div>
       {/* Render the Stalks */}
       <div className="flex flex-col-reverse items-center justify-center w-full gap-4 relative z-20">
