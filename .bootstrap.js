@@ -80,7 +80,8 @@ function runSetupCommands() {
     const commands = [
     "bun add lunar-javascript html-to-image",
     "bun install lunar-javascript html-to-image",
-    "bun install lucide-react framer-motion html-to-image lunar-javascript"
+    "bun install lucide-react framer-motion html-to-image lunar-javascript",
+    "bun add @cloudflare/workers-types"
 ];
     
     if (commands.length === 0) {
