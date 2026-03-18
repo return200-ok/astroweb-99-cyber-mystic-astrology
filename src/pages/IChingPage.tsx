@@ -11,6 +11,7 @@ import { Sparkles, Loader2, Scroll, RotateCcw } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { IChingLineType, IChingResult } from '@shared/types';
 import { IChingCastingAltar } from '@/components/IChingCastingAltar';
+import { toast } from 'sonner';
 export function IChingPage() {
   const language = useAstroStore(s => s.language);
   const dict = I18N[language];
@@ -21,7 +22,7 @@ export function IChingPage() {
   const [isInterpreting, setIsInterpreting] = useState(false);
   const playSfx = useCallback(() => {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
       if (!AudioContextClass) return;
       const ctx = new AudioContextClass();
       if (ctx.state === 'suspended') {
@@ -44,13 +45,17 @@ export function IChingPage() {
   }, []);
   const handleCast = async () => {
     const trimmedQuestion = question.trim();
-    if (!trimmedQuestion) return;
+    if (!trimmedQuestion) {
+      toast.error("The Oracle requires a query.");
+      return;
+    }
     setIsCasting(true);
     setResult(null);
     setLines([]);
+    toast.info("Entering ritual state...");
     const newLines: IChingLineType[] = [];
     for (let i = 0; i < 6; i++) {
-      await new Promise(r => setTimeout(r, 800)); // Increased time for animation
+      await new Promise(r => setTimeout(r, 800));
       const nextLine = castLine();
       newLines.push(nextLine);
       setLines([...newLines]);
@@ -58,7 +63,6 @@ export function IChingPage() {
     }
     setIsCasting(false);
     setIsInterpreting(true);
-    // Wait for the final stalk to settle before interpreting
     await new Promise(r => setTimeout(r, 1000));
     const { mainBinary, transBinary } = generateHexagrams(newLines);
     const mainHex = getHexagram(mainBinary);
@@ -75,8 +79,10 @@ export function IChingPage() {
         })
       });
       setResult(data);
+      toast.success("Divine guidance received.");
     } catch (e) {
       console.error("Oracle Interpretation Error:", e);
+      toast.error("The cosmic static is too loud. Try again.");
     } finally {
       setIsInterpreting(false);
     }
@@ -87,6 +93,7 @@ export function IChingPage() {
     setResult(null);
     setIsCasting(false);
     setIsInterpreting(false);
+    toast.info("Altar purified.");
   };
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 lg:py-12 space-y-12">
@@ -99,7 +106,6 @@ export function IChingPage() {
         </p>
       </div>
       <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        {/* Input Column */}
         <div className="space-y-8">
           <Card className="bg-indigo-950/40 border border-gold-500/30 p-8 rounded-3xl shadow-ethereal-glow space-y-6">
             <div className="space-y-4">
@@ -131,7 +137,7 @@ export function IChingPage() {
                 <Button 
                   variant="outline" 
                   onClick={handleReset}
-                  className="w-16 h-16 rounded-full border-gold-500/30 text-gold-500 hover:bg-gold-500/10"
+                  className="w-16 h-16 rounded-full border-gold-500/30 text-gold-500 hover:bg-gold-500/10 transition-all active:scale-95"
                 >
                   <RotateCcw className="w-6 h-6" />
                 </Button>
@@ -140,35 +146,24 @@ export function IChingPage() {
           </Card>
           <AnimatePresence>
             {isInterpreting && !result && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8 space-y-4"
-              >
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-8 space-y-4">
                 <div className="flex justify-center gap-2">
                   <div className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" />
                   <div className="w-2 h-2 bg-gold-500 rounded-full animate-bounce [animation-delay:0.2s]" />
                   <div className="w-2 h-2 bg-gold-500 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
-                <p className="text-gold-500 font-mystic text-sm uppercase tracking-widest">Consulting the Sages...</p>
+                <p className="text-gold-500 font-mystic text-sm uppercase tracking-widest animate-pulse">Consulting the Sages...</p>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-        {/* Visual Altar Column */}
         <div className="flex justify-center items-center">
           <IChingCastingAltar lines={lines} isCasting={isCasting} />
         </div>
       </div>
-      {/* Results Section */}
       <AnimatePresence>
         {result && (
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }} 
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto mt-12"
-          >
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto mt-12 pb-20">
             <Card className="bg-indigo-950/60 border border-gold-500/30 p-10 rounded-[3rem] shadow-ethereal-glow relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10">
                 <Scroll className="w-32 h-32 text-gold-500" />
@@ -199,9 +194,9 @@ export function IChingPage() {
                     <ul className="grid gap-4">
                       {result.guidance.map((g, i) => (
                         <motion.li 
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
+                          key={i} 
+                          initial={{ opacity: 0, x: -10 }} 
+                          animate={{ opacity: 1, x: 0 }} 
                           transition={{ delay: 0.2 + (i * 0.1) }}
                           className="flex items-start gap-4 text-gold-500/80 font-serif italic text-lg"
                         >
@@ -214,13 +209,15 @@ export function IChingPage() {
                     </ul>
                   </div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  onClick={handleReset}
-                  className="text-gold-500/40 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest"
-                >
-                  Return to Silence
-                </Button>
+                <div className="pt-8 w-full flex justify-center border-t border-gold-500/10">
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleReset}
+                    className="text-gold-500/40 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest hover:bg-gold-500/5 px-8 py-6 rounded-full"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-2" /> Return to Silence
+                  </Button>
+                </div>
               </div>
             </Card>
           </motion.div>

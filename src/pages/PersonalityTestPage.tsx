@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Sparkles, RefreshCcw, Sun, Scroll, Star } from 'lucide-react';
-import type { BigFiveTrait, EnneagramType } from '@shared/types';
+import type { BigFiveTrait, EnneagramType, I18nDictionary } from '@shared/types';
 type TestMode = 'BIG_FIVE' | 'ENNEAGRAM';
 export function PersonalityTestPage() {
   const language = useAstroStore(s => s.language);
@@ -20,10 +20,10 @@ export function PersonalityTestPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [isComputing, setIsComputing] = useState(false);
-  const questions = useMemo(() =>
-    testMode === 'BIG_FIVE' ? PERSONALITY_QUESTIONS : ENNEAGRAM_QUESTIONS,
+  const questions = useMemo(() => 
+    testMode === 'BIG_FIVE' ? PERSONALITY_QUESTIONS : ENNEAGRAM_QUESTIONS, 
   [testMode]);
-  const hasResults = useMemo(() =>
+  const hasResults = useMemo(() => 
     (testMode === 'BIG_FIVE' && !!bigFiveResults) || (testMode === 'ENNEAGRAM' && !!enneagramResults),
   [testMode, bigFiveResults, enneagramResults]);
   useEffect(() => {
@@ -159,8 +159,13 @@ export function PersonalityTestPage() {
               </h2>
               <div className="grid grid-cols-1 gap-4">
                 {[1, 2, 3, 4, 5].map(val => (
-                  <Button key={val} variant="outline" onClick={() => handleAnswer(val)} className="border border-gold-500/30 text-gold-500 hover:bg-gold-500 hover:text-indigo-900 rounded-full h-auto py-5 font-mystic text-lg transition-all">
-                    {(dict as any)[`likert${val}`]}
+                  <Button 
+                    key={val} 
+                    variant="outline" 
+                    onClick={() => handleAnswer(val)} 
+                    className="border border-gold-500/30 text-gold-500 hover:bg-gold-500 hover:text-indigo-900 rounded-full h-auto py-5 font-mystic text-lg transition-all"
+                  >
+                    {dict[`likert${val}` as keyof I18nDictionary] as string}
                   </Button>
                 ))}
               </div>

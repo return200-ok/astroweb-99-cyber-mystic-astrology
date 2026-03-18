@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { useAstroStore } from '@/lib/store';
 import { I18N } from '@shared/astrology-data';
 import { EARTHLY_BRANCHES, WUXING_COLORS } from '@shared/tuvi-data';
-import { calculateTuviChart, getCanChi } from '@/lib/tuvi-logic';
+import { calculateTuviChart } from '@/lib/tuvi-logic';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Download, Sparkles, RotateCcw, Heart, Calendar, Scroll, Gauge, Loader2 } from 'lucide-react';
+import { Compass, Sparkles, RotateCcw, Heart, Calendar, Scroll, Gauge, Loader2, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { TuviChart, AgeCompatResponse, AuspiciousDay, ImperialEventType } from '@shared/types';
-import { cn } from '@/lib/utils';
 import { api } from '@/lib/api-client';
+import { toast } from 'sonner';
 export function TuviPage() {
   const language = useAstroStore(s => s.language);
   const dict = I18N[language];
@@ -42,6 +42,7 @@ export function TuviPage() {
     setTimeout(() => {
       setChart(calculateTuviChart(name, new Date(dob), hour));
       setIsCasting(false);
+      toast.success("Stars have been cast.");
     }, 1200);
   };
   const handleAgeCompare = async () => {
@@ -57,7 +58,10 @@ export function TuviPage() {
         })
       });
       setAgeResult(res);
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+      console.error(e);
+      toast.error("Failed to calculate cosmic alignment.");
+    }
     setIsComparing(false);
   };
   const handleDaySearch = async () => {
@@ -73,22 +77,29 @@ export function TuviPage() {
         })
       });
       setCalResults(res);
-    } catch (e) { console.error(e); }
+      toast.success(`${res.length} auspicious windows found.`);
+    } catch (e) { 
+      console.error(e);
+      toast.error("Failed to seek auspicious windows.");
+    }
     setIsSearching(false);
   };
   const exportChart = () => {
     const node = document.getElementById('tuvi-chart-grid');
     if (node) {
+      toast.info("Capturing astral projection...");
       toPng(node, {
         backgroundColor: '#1e1b4b',
         pixelRatio: 2,
-        fontEmbedCSS: "",
-        style: { fontVariant: "none" }
       }).then((dataUrl) => {
         const link = document.createElement('a');
         link.download = `IMPERIAL_CHART_${name || 'SPIRIT'}.png`;
         link.href = dataUrl;
         link.click();
+        toast.success("Chart exported to physical realm.");
+      }).catch(err => {
+        console.error("Export error:", err);
+        toast.error("Failed to export chart. The stars are elusive.");
       });
     }
   };
@@ -138,7 +149,7 @@ export function TuviPage() {
                     <div className="text-[10px] text-gold-500/60 mt-4 space-y-1">
                       <p>SOLAR: {new Date(chart.birthDate).toLocaleDateString()}</p>
                       <p>LUNAR: {chart.lunarDate}</p>
-                      <p className="text-gold-500 font-mystic pt-2">ELEMENT: {chart.menhElement}</p>
+                      <p className="text-gold-500 font-mystic pt-2 uppercase tracking-widest">Element: {chart.menhElement}</p>
                     </div>
                   </div>
                   {[9,8,7,6,10,5,11,4,0,1,2,3].map((pid, idx) => {
@@ -159,8 +170,12 @@ export function TuviPage() {
                   })}
                 </div>
                 <div className="flex justify-center gap-4">
-                   <Button variant="outline" onClick={() => setChart(null)} className="border-gold-500/50 text-gold-500 rounded-full font-mystic uppercase h-12 px-8">RE-CAST</Button>
-                   <Button onClick={exportChart} className="bg-gold-500 text-indigo-900 rounded-full font-mystic uppercase h-12 px-8">EXPORT</Button>
+                   <Button variant="outline" onClick={() => setChart(null)} className="border-gold-500/50 text-gold-500 rounded-full font-mystic uppercase h-12 px-8">
+                     <RotateCcw className="mr-2 w-4 h-4" /> RE-CAST
+                   </Button>
+                   <Button onClick={exportChart} className="bg-gold-500 text-indigo-900 rounded-full font-mystic uppercase h-12 px-8 shadow-ethereal-glow">
+                     <Download className="mr-2 w-4 h-4" /> EXPORT
+                   </Button>
                 </div>
               </motion.div>
             )}
@@ -204,6 +219,13 @@ export function TuviPage() {
                       <div className="absolute inset-0 flex items-center justify-center text-4xl font-mystic font-bold text-gold-500">{ageResult.score}%</div>
                     </div>
                     <h3 className="text-2xl font-mystic text-gold-500 uppercase italic mb-4">{dict.compatibilityScore}</h3>
+                    <div className="flex gap-2 mb-6">
+                      {ageResult.elements.map((el, i) => (
+                        <span key={i} className="text-[10px] bg-gold-500/10 border border-gold-500/30 px-3 py-1 rounded-full text-gold-500 font-mystic uppercase">
+                          {el}
+                        </span>
+                      ))}
+                    </div>
                     <div className="border-t border-gold-500/20 pt-6 w-full text-gold-500/80 font-serif italic text-lg leading-relaxed">
                       <Scroll className="w-8 h-8 text-gold-500/40 mx-auto mb-4" />
                       <p>“{ageResult.analysis}”</p>
@@ -254,6 +276,11 @@ export function TuviPage() {
                   </motion.div>
                 ))}
               </AnimatePresence>
+              {!isSearching && calResults.length === 0 && calForm.start && (
+                <div className="text-center py-12 opacity-30 font-serif italic">
+                  No specifically auspicious windows found for this period.
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
