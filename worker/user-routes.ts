@@ -3,7 +3,9 @@ import type { Env } from './core-utils';
 import { UserEntity, ChatBoardEntity, GuestbookEntity } from "./entities";
 import { ok, bad, notFound, isStr } from './core-utils';
 import { tuviRoutes } from './tuvi-routes';
+import { ichingRoutes } from './iching-routes';
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
+  ichingRoutes(app);
   tuviRoutes(app);
   app.get('/api/test', (c) => c.json({ success: true, data: { name: 'CF Workers Demo' }}));
   // USERS

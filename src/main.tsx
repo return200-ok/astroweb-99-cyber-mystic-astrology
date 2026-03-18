@@ -16,6 +16,7 @@ import { CompatibilityPage } from '@/pages/CompatibilityPage'
 import { CosmicBBS } from '@/pages/CosmicBBS'
 import { PersonalityTestPage } from '@/pages/PersonalityTestPage'
 import { TuviPage } from '@/pages/TuviPage'
+import { IChingPage } from '@/pages/IChingPage'
 import { RetroLayout } from '@/components/layout/RetroLayout'
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,6 +45,11 @@ const router = createBrowserRouter([
   {
     path: "/tuvi",
     element: <RetroLayout><TuviPage /></RetroLayout>,
+    errorElement: <RouteErrorBoundary />,
+  },
+  {
+    path: "/iching",
+    element: <RetroLayout><IChingPage /></RetroLayout>,
     errorElement: <RouteErrorBoundary />,
   },
   {

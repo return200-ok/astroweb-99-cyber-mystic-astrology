@@ -27,6 +27,19 @@ export interface TuviChart {
   cucElement: Wuxing;
   palaces: TuviPalace[];
 }
+export type IChingLineType = 6 | 7 | 8 | 9; // 6: Old Yin, 7: Young Yang, 8: Young Yin, 9: Old Yang
+export interface IChingHexagram {
+  id: string; // 6-bit binary string e.g. "111111"
+  number: number;
+  name: Record<Language, string>;
+  symbol: string;
+  judgment: Record<Language, string>;
+}
+export interface IChingResult {
+  summary: string;
+  analysis: string;
+  guidance: string[];
+}
 export type ImperialEventType = 'marriage' | 'business' | 'kids' | 'opening' | 'moving';
 export interface AgeCompatRequest {
   personA: { name: string; dob: string; hour: number };
@@ -70,4 +83,5 @@ export interface I18nDictionary {
   enneagramMode: string; bigFiveMode: string; coreType: string; activeWing: string; typeProfile: string; adviceProtocol: string;
   navTuvi: string; tuviTitle: string; tuviSub: string; birthDate: string; birthHour: string; lunarDate: string; ownerName: string; calculateChart: string; palaceNames: string[]; starNames: Record<string, string>;
   tabChart: string; tabAge: string; tabDay: string; eventMarriage: string; eventBusiness: string; eventKids: string; eventOpening: string; eventMoving: string; compatibilityScore: string; goodDaysFound: string;
+  navIching: string; ichingTitle: string; ichingSub: string; askQuestion: string; castHexagram: string; formingHexagram: string; interpretationTitle: string; mainHexagram: string; transformedHexagram: string; advice: string;
 }
