@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Sparkles, Loader2, Scroll, RotateCcw } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { IChingLineType, IChingResult } from '@shared/types';
-import { IChingCastingAltar } from '@/components/IChingCastingAltar';
+import { IChingCastingAltar } from '@/components/IChingCastingAltar.tsx';
 import { toast } from 'sonner';
 // Reusable audio context to avoid repeated initialization issues
 let audioCtx: AudioContext | null = null;
