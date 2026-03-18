@@ -97,8 +97,10 @@ export function PersonalityTestPage() {
   const enneagramAnalysis = useMemo(() => {
     if (testMode !== 'ENNEAGRAM' || !enneagramResults) return null;
     const scores = Object.entries(enneagramResults) as [string, number][];
+    if (scores.length === 0) return null;
     scores.sort((a, b) => b[1] - a[1]);
     const core = parseInt(scores[0][0]) as EnneagramType;
+    if (isNaN(core)) return null;
     const left = core === 1 ? 9 : core - 1;
     const right = core === 9 ? 1 : core + 1;
     const wing = (enneagramResults[left as EnneagramType] ?? 0) > (enneagramResults[right as EnneagramType] ?? 0) ? left : right;
@@ -208,15 +210,15 @@ export function PersonalityTestPage() {
                     <Scroll className="text-gold-500 w-8 h-8" />
                     <h2 className="text-3xl font-mystic not-italic uppercase tracking-widest">{dict.typeProfile}</h2>
                   </div>
-                  {testMode === 'ENNEAGRAM' && enneagramAnalysis && (
+                  {testMode === 'ENNEAGRAM' && enneagramAnalysis && ENNEAGRAM_METADATA[enneagramAnalysis.core] && (
                     <div className="space-y-6">
                       <h3 className="text-2xl font-mystic not-italic text-gold-500 uppercase">{ENNEAGRAM_METADATA[enneagramAnalysis.core].name[language]}</h3>
-                      <p>{ENNEAGRAM_METADATA[enneagramAnalysis.core].description[language]}</p>
+                      <p className="text-gold-500/90">{ENNEAGRAM_METADATA[enneagramAnalysis.core].description[language]}</p>
                       <div className="pt-6 border-t border-gold-500/20">
-                         <p className="text-xs uppercase font-mystic not-italic text-gold-500 mb-2 flex items-center gap-2">
+                         <p className="text-xs uppercase font-mystic not-italic text-gold-500 mb-2 flex items-center gap-2 font-bold tracking-widest">
                            <Star className="w-4 h-4" /> {dict.adviceProtocol}
                          </p>
-                         <p className="text-sm opacity-80">{ENNEAGRAM_METADATA[enneagramAnalysis.core].advice[language]}</p>
+                         <p className="text-sm text-gold-500/80 leading-relaxed font-serif italic">{ENNEAGRAM_METADATA[enneagramAnalysis.core].advice[language]}</p>
                       </div>
                     </div>
                   )}
@@ -224,10 +226,10 @@ export function PersonalityTestPage() {
                     <div className="space-y-6">
                        {(Object.entries(bigFiveResults) as [BigFiveTrait, number][]).map(([trait, value]) => (
                          <div key={trait} className="space-y-1">
-                           <p className="text-xs font-mystic not-italic uppercase text-gold-500 tracking-tighter">
+                           <p className="text-xs font-mystic not-italic uppercase text-gold-500 tracking-tighter font-bold">
                              {TRAIT_METADATA[trait].name[language]}
                            </p>
-                           <p className="text-sm opacity-80">
+                           <p className="text-sm text-gold-500/80 italic font-serif">
                              {value > 50 ? TRAIT_METADATA[trait].highDesc[language] : TRAIT_METADATA[trait].lowDesc[language]}
                            </p>
                          </div>

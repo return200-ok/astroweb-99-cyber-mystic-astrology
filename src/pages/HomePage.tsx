@@ -19,15 +19,22 @@ export function HomePage() {
     [selectedSignId]
   );
   useEffect(() => {
+    let timer1: ReturnType<typeof setTimeout>;
+    let timer2: ReturnType<typeof setTimeout>;
     if (selectedSign) {
       setFadingText(false);
       setShowAnalysis(false);
-      const timer = setTimeout(() => {
+      timer1 = setTimeout(() => {
         setFadingText(true);
-        setTimeout(() => setShowAnalysis(true), 1200);
+        timer2 = setTimeout(() => {
+          setShowAnalysis(true);
+        }, 1200);
       }, 500);
-      return () => clearTimeout(timer);
     }
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [selectedSignId, selectedSign]);
   if (!selectedSign) {
     return (

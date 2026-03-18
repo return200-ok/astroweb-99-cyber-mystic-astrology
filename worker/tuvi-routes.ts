@@ -14,57 +14,74 @@ export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
     return ok(c, { analysis });
   });
   app.post('/api/tuvi/age-compat', async (c) => {
-    const { personA, personB, eventType } = await c.req.json() as AgeCompatRequest;
-    if (!personA.dob || !personB.dob) return bad(c, 'Both birth dates required');
-    const lunarA = Solar.fromDate(new Date(personA.dob)).getLunar();
-    const lunarB = Solar.fromDate(new Date(personB.dob)).getLunar();
-    // Pseudo-logic for Can Chi compatibility
-    const stemA = lunarA.getYearGan();
-    const stemB = lunarB.getYearGan();
-    const branchA = lunarA.getYearZhi();
-    const branchB = lunarB.getYearZhi();
-    let score = 65;
-    if (stemA === stemB) score += 5;
-    if (branchA === branchB) score += 10;
-    // Add randomness based on event type to feel unique
-    const hash = (personA.name.length + personB.name.length + eventType.length) % 20;
-    score += hash;
-    const analysis = score > 80 
-      ? "CELESTIAL HARMONY: The earthly branches of these two souls are in perfect resonance. The path ahead is clear of shadows."
-      : "STEADFAST ALIGNMENT: Moderate resonance detected. Spiritual diligence will ensure a stable foundation for this endeavor.";
-    return ok(c, {
-      score: Math.min(score, 100),
-      analysis,
-      elements: [lunarA.getYearXun(), lunarB.getYearXun()]
-    });
+    const body = await c.req.json() as AgeCompatRequest;
+    if (!body.personA?.dob || !body.personB?.dob) return bad(c, 'Both birth dates required');
+    const { personA, personB, eventType } = body;
+    try {
+      const dateA = new Date(personA.dob);
+      const dateB = new Date(personB.dob);
+      if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+        return bad(c, 'Invalid birth dates provided');
+      }
+      const lunarA = Solar.fromDate(dateA).getLunar();
+      const lunarB = Solar.fromDate(dateB).getLunar();
+      const stemA = lunarA.getYearGan();
+      const stemB = lunarB.getYearGan();
+      const branchA = lunarA.getYearZhi();
+      const branchB = lunarB.getYearZhi();
+      let score = 65;
+      if (stemA === stemB) score += 5;
+      if (branchA === branchB) score += 10;
+      const hash = (personA.name.length + personB.name.length + (eventType?.length || 0)) % 20;
+      score += hash;
+      const analysis = score > 80
+        ? "CELESTIAL HARMONY: The earthly branches of these two souls are in perfect resonance. The path ahead is clear of shadows."
+        : "STEADFAST ALIGNMENT: Moderate resonance detected. Spiritual diligence will ensure a stable foundation for this endeavor.";
+      return ok(c, {
+        score: Math.min(score, 100),
+        analysis,
+        elements: [lunarA.getYearXun(), lunarB.getYearXun()]
+      });
+    } catch (e) {
+      return bad(c, 'Failed to process age compatibility');
+    }
   });
   app.post('/api/tuvi/good-days', async (c) => {
-    const { startDate, endDate, eventType } = await c.req.json() as GoodDayRequest;
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const results: AuspiciousDay[] = [];
-    let current = new Date(start);
-    // Limit range to 31 days to prevent timeouts
-    const limit = new Date(start);
-    limit.setDate(limit.getDate() + 31);
-    const finalEnd = end > limit ? limit : end;
-    while (current <= finalEnd) {
-      const solar = Solar.fromDate(new Date(current));
-      const lunar = solar.getLunar();
-      // Determine if day is Hoang Dao (pseudo-check via zhi index)
-      const isHoangDao = lunar.getDayZhiIndex() % 2 === 0;
-      if (isHoangDao) {
-        results.push({
-          date: current.toISOString(),
-          lunarDate: `${lunar.getDay()}/${lunar.getMonth()}`,
-          type: 'Hoàng Đạo',
-          stars: ['Thanh Long', 'Minh Đường'],
-          description: `Excellent day for ${eventType}. Cosmic energy is concentrated and favorable.`
-        });
+    const body = await c.req.json() as GoodDayRequest;
+    if (!body.startDate || !body.endDate) return bad(c, 'Date range required');
+    const { startDate, endDate, eventType } = body;
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return bad(c, 'Invalid date range provided');
       }
-      current.setDate(current.getDate() + 1);
+      const results: AuspiciousDay[] = [];
+      const current = new Date(start);
+      const maxLimit = new Date(start);
+      maxLimit.setDate(maxLimit.getDate() + 31);
+      const finalEnd = end > maxLimit ? maxLimit : end;
+      while (current <= finalEnd) {
+        // Use a copy to avoid mutation issues during Solar.fromDate
+        const loopDate = new Date(current);
+        const solar = Solar.fromDate(loopDate);
+        const lunar = solar.getLunar();
+        const isHoangDao = lunar.getDayZhiIndex() % 2 === 0;
+        if (isHoangDao) {
+          results.push({
+            date: loopDate.toISOString(),
+            lunarDate: `${lunar.getDay()}/${lunar.getMonth()}`,
+            type: 'Hoàng Đạo',
+            stars: ['Thanh Long', 'Minh Đường'],
+            description: `Excellent day for ${eventType || 'spiritual endeavors'}. Cosmic energy is concentrated and favorable.`
+          });
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      return ok(c, results);
+    } catch (e) {
+      return bad(c, 'Failed to process auspicious days search');
     }
-    return ok(c, results);
   });
   app.get('/api/tuvi/ages', async (c) => {
     const years = [2025, 2026, 2027, 2028, 2029, 2030];
