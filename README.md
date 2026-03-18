@@ -1,6 +1,6 @@
 # Full-Stack Cloudflare Workers Template
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/return200-ok/astroweb-99-cyber-mystic-astrology)
 
 A production-ready full-stack application template powered by Cloudflare Workers, featuring a React frontend, Hono backend, and Durable Objects for scalable state management. Includes pre-built entities for users and chat boards with real-time messaging, pagination, and CRUD operations.
 
@@ -111,7 +111,7 @@ bunx wrangler deploy
 - Assets served as SPA with API precedence.
 - Update `wrangler.jsonc` > `name` for your Worker name.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/return200-ok/astroweb-99-cyber-mystic-astrology)
 
 ### Custom Domain & Observability
 
