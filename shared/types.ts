@@ -27,9 +27,28 @@ export interface TuviChart {
   cucElement: Wuxing;
   palaces: TuviPalace[];
 }
-export interface TuviAnalysisRequest {
-  chart: TuviChart;
-  language: Language;
+export type ImperialEventType = 'marriage' | 'business' | 'kids' | 'opening' | 'moving';
+export interface AgeCompatRequest {
+  personA: { name: string; dob: string; hour: number };
+  personB: { name: string; dob: string; hour: number };
+  eventType: ImperialEventType;
+}
+export interface AgeCompatResponse {
+  score: number;
+  analysis: string;
+  elements: string[];
+}
+export interface GoodDayRequest {
+  startDate: string;
+  endDate: string;
+  eventType: ImperialEventType;
+}
+export interface AuspiciousDay {
+  date: string;
+  lunarDate: string;
+  type: 'Hoàng Đạo' | 'Hắc Đạo';
+  stars: string[];
+  description: string;
 }
 export interface User { id: string; name: string; }
 export interface Chat { id: string; title: string; }
@@ -50,4 +69,5 @@ export interface I18nDictionary {
   testTitle: string; testSub: string; questionCount: string; resultProfile: string; traitHigh: string; traitLow: string; restartTest: string; likert1: string; likert2: string; likert3: string; likert4: string; likert5: string;
   enneagramMode: string; bigFiveMode: string; coreType: string; activeWing: string; typeProfile: string; adviceProtocol: string;
   navTuvi: string; tuviTitle: string; tuviSub: string; birthDate: string; birthHour: string; lunarDate: string; ownerName: string; calculateChart: string; palaceNames: string[]; starNames: Record<string, string>;
+  tabChart: string; tabAge: string; tabDay: string; eventMarriage: string; eventBusiness: string; eventKids: string; eventOpening: string; eventMoving: string; compatibilityScore: string; goodDaysFound: string;
 }

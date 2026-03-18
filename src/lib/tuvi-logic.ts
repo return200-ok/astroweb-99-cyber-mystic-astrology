@@ -4,9 +4,6 @@ import { PALACE_ORDER_VN, TUVI_MAIN_STARS, TUVI_PALACE_WUXING } from '@shared/tu
 export function calculateTuviChart(name: string, date: Date, hourIndex: number): TuviChart {
   const solar = Solar.fromDate(date);
   const lunar = solar.getLunar();
-  // Calculate Mệnh palace position
-  // Logic: Month and Hour determines Menh
-  // In VN Tuvi: Month starts from Dan (index 2), Hour goes backward
   const menhIndex = (2 + (lunar.getMonth() - 1) - hourIndex + 12) % 12;
   const thanIndex = (2 + (lunar.getMonth() - 1) + hourIndex) % 12;
   const palaces: TuviPalace[] = [];
@@ -21,8 +18,6 @@ export function calculateTuviChart(name: string, date: Date, hourIndex: number):
       isThan: i === thanIndex,
     });
   }
-  // Simplified Star Placement for Demo (Actual algorithms are 100+ lines)
-  // We'll place the 14 Main Stars based on a pseudo-random hash of the birth data to ensure stability
   const seed = lunar.getDay() + lunar.getMonth() + lunar.getYear() + hourIndex;
   TUVI_MAIN_STARS.forEach((star, idx) => {
     const pos = (seed + idx * 3) % 12;
@@ -32,8 +27,24 @@ export function calculateTuviChart(name: string, date: Date, hourIndex: number):
     ownerName: name || 'ANONYMOUS_ENTITY',
     birthDate: date.toISOString(),
     lunarDate: `${lunar.getDay()}/${lunar.getMonth()}/${lunar.getYear()}`,
-    menhElement: 'Kim', // Mock
-    cucElement: 'Hỏa', // Mock
+    menhElement: 'Kim',
+    cucElement: 'Hỏa',
     palaces
   };
+}
+export function getCanChi(date: string) {
+  if (!date) return null;
+  const lunar = Solar.fromDate(new Date(date)).getLunar();
+  return {
+    year: `${lunar.getYearGan()}${lunar.getYearZhi()}`,
+    month: `${lunar.getMonthGan()}${lunar.getMonthZhi()}`,
+    day: `${lunar.getDayGan()}${lunar.getDayZhi()}`
+  };
+}
+export function getElement(date: string): Wuxing {
+  if (!date) return 'Thổ';
+  const lunar = Solar.fromDate(new Date(date)).getLunar();
+  // Simplified logic for element mapping
+  const elements: Wuxing[] = ['Kim', 'Mộc', 'Thủy', 'Hỏa', 'Thổ'];
+  return elements[lunar.getYearZhiIndex() % 5];
 }

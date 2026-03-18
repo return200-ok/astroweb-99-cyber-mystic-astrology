@@ -64,6 +64,16 @@ export const I18N: Record<Language, I18nDictionary> = {
     calculateChart: "CAST_STARS",
     palaceNames: PALACE_ORDER_VN,
     starNames: {},
+    tabChart: "CHART",
+    tabAge: "COMPATIBILITY",
+    tabDay: "CALENDAR",
+    eventMarriage: "MARRIAGE",
+    eventBusiness: "VENTURE",
+    eventKids: "DESCENDANTS",
+    eventOpening: "GRAND_OPENING",
+    eventMoving: "ASCENSION_HOUSE",
+    compatibilityScore: "ALIGNMENT_LEVEL",
+    goodDaysFound: "AUSPICIOUS_WINDOWS_FOUND",
   },
   vi: {
     terminalTitle: "Thiên Bản Lệnh",
@@ -128,8 +138,19 @@ export const I18N: Record<Language, I18nDictionary> = {
     calculateChart: "LẬP LÁ SỐ",
     palaceNames: PALACE_ORDER_VN,
     starNames: {},
+    tabChart: "LÁ SỐ",
+    tabAge: "XEM TUỔI",
+    tabDay: "XEM NGÀY",
+    eventMarriage: "CƯỚI HỎI",
+    eventBusiness: "KINH DOANH",
+    eventKids: "SINH CON",
+    eventOpening: "KHAI TRƯƠNG",
+    eventMoving: "NHẬP TRẠCH",
+    compatibilityScore: "ĐỘ TƯƠNG HỢP",
+    goodDaysFound: "NGÀY_HOÀNG_ĐẠO_TÌM_THẤY",
   }
 };
+// Rest of existing data constants...
 export const ENNEAGRAM_METADATA: Record<EnneagramType, EnneagramMetadata> = {
   1: {
     name: { en: "The Idealist", vi: "Người Cầu Toàn" },
@@ -187,7 +208,6 @@ export const ENNEAGRAM_METADATA: Record<EnneagramType, EnneagramMetadata> = {
   }
 };
 export const ENNEAGRAM_QUESTIONS: EnneagramQuestion[] = [
-  // Simplified for phase 10
   { id: 101, type: 1, text: { en: "I seek sacred perfection in all my actions.", vi: "Tôi tìm kiếm sự hoàn hảo thiêng liêng trong mọi hành động." } },
   { id: 201, type: 2, text: { en: "Serving others brings me closer to the divine.", vi: "Phụng sự người khác giúp tôi gần hơn với đấng tối cao." } },
   { id: 301, type: 3, text: { en: "I manifest success through focused intention.", vi: "Tôi thể hiện thành công thông qua ý định tập trung." } },
