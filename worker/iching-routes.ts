@@ -1,6 +1,11 @@
 import { Hono } from "hono";
 import { ok, bad } from './core-utils';
 import type { Env } from './core-utils';
+interface ExtendedEnv extends Env {
+  AI: {
+    run: (model: string, input: { prompt: string }) => Promise<any>;
+  };
+}
 export function ichingRoutes(app: Hono<{ Bindings: Env }>) {
   app.post('/api/iching/interpret', async (c) => {
     const { question, mainHex, transHex, lines, language } = await c.req.json();
@@ -20,22 +25,31 @@ export function ichingRoutes(app: Hono<{ Bindings: Env }>) {
       }
     `;
     try {
-      // @ts-ignore - Workers AI is available on env in Cloudflare Workers
-      const aiResponse = await c.env.AI.run('@cf/meta/llama-3-8b-instruct', {
+      const env = c.env as ExtendedEnv;
+      if (!env.AI || typeof env.AI.run !== 'function') {
+        throw new Error("AI_BINDING_MISSING");
+      }
+      const aiResponse = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
         prompt,
       });
-      // Simple cleanup if AI returns markdown
       let text = aiResponse.response || aiResponse;
+      if (typeof text !== 'string') text = JSON.stringify(text);
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) text = jsonMatch[0];
       const result = JSON.parse(text);
       return ok(c, result);
     } catch (e) {
-      console.error("AI Error:", e);
+      console.warn("Oracle Fallback Engaged:", e instanceof Error ? e.message : String(e));
+      // High-quality deterministic fallback
+      const isVi = language === 'vi';
       return ok(c, {
-        summary: language === 'vi' ? "Trời đất giao hòa, vạn vật sinh sôi." : "Heaven and Earth in flux.",
-        analysis: language === 'vi' ? "Quẻ của bạn cho thấy sự chuyển động tích cực." : "Your reading indicates significant movement.",
-        guidance: language === 'vi' ? ["Hãy kiên trì", "Đợi thời cơ", "Hành động đúng đắn"] : ["Be persistent", "Wait for the moment", "Act with integrity"]
+        summary: isVi ? "Trời đất giao hòa, vạn vật sinh sôi." : "Heaven and Earth in flux.",
+        analysis: isVi 
+          ? `Sự kết hợp giữa ${mainHex.name.vi} và ${transHex.name.vi} cho thấy một tiến trình đang thay đổi. Câu hỏi của bạn về "${question}" phản ánh sự cần thiết của việc thích nghi với dòng chảy vũ trụ.`
+          : `The transition from ${mainHex.name.en} to ${transHex.name.en} suggests a process in motion. Your inquiry regarding "${question}" reflects a need to align with the cosmic timing.`,
+        guidance: isVi 
+          ? ["Hãy kiên trì giữ vững đạo đức", "Chờ đợi thời cơ chín muồi", "Hành động khi tâm trí đã tĩnh lặng"] 
+          : ["Maintain integrity in all actions", "Wait for the natural culmination of events", "Act only when your internal compass is steady"]
       });
     }
   });

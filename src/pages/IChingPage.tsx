@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAstroStore } from '@/lib/store';
 import { I18N } from '@shared/astrology-data';
@@ -7,7 +7,7 @@ import { castLine, generateHexagrams } from '@/lib/iching-logic';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Sparkles, Loader2, Scroll, Leaf, History } from 'lucide-react';
+import { Sparkles, Loader2, Scroll } from 'lucide-react';
 import { api } from '@/lib/api-client';
 import { IChingLineType, IChingResult } from '@shared/types';
 export function IChingPage() {
@@ -20,7 +20,12 @@ export function IChingPage() {
   const [isInterpreting, setIsInterpreting] = useState(false);
   const playSfx = () => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => { /* resume failed - likely autoplay block */ });
+      }
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -32,10 +37,13 @@ export function IChingPage() {
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.2);
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Audio feedback suppressed by browser policies.");
+    }
   };
   const handleCast = async () => {
-    if (!question.trim()) return;
+    const trimmedQuestion = question.trim();
+    if (!trimmedQuestion) return;
     setIsCasting(true);
     setResult(null);
     setLines([]);
@@ -43,7 +51,8 @@ export function IChingPage() {
     const newLines: IChingLineType[] = [];
     for (let i = 0; i < 6; i++) {
       await new Promise(r => setTimeout(r, 400));
-      newLines.push(castLine());
+      const nextLine = castLine();
+      newLines.push(nextLine);
       setLines([...newLines]);
     }
     setIsCasting(false);
@@ -54,11 +63,17 @@ export function IChingPage() {
     try {
       const data = await api<IChingResult>('/api/iching/interpret', {
         method: 'POST',
-        body: JSON.stringify({ question, mainHex, transHex, lines: newLines, language })
+        body: JSON.stringify({ 
+          question: trimmedQuestion, 
+          mainHex, 
+          transHex, 
+          lines: newLines, 
+          language 
+        })
       });
       setResult(data);
     } catch (e) {
-      console.error(e);
+      console.error("Oracle Interpretation Error:", e);
     } finally {
       setIsInterpreting(false);
     }
@@ -73,29 +88,29 @@ export function IChingPage() {
         <Card className="bg-indigo-950/40 border border-gold-500/30 p-8 rounded-3xl shadow-ethereal-glow space-y-6">
           <div className="space-y-2">
             <label className="text-gold-500 font-mystic text-xs uppercase tracking-[0.2em]">{dict.askQuestion}</label>
-            <Input 
-              value={question} 
+            <Input
+              value={question}
               onChange={e => setQuestion(e.target.value)}
               placeholder="..."
               className="bg-indigo-900/50 border-gold-500/30 text-gold-500 rounded-full h-14 px-8 text-lg italic"
             />
           </div>
-          <Button 
-            onClick={handleCast} 
+          <Button
+            onClick={handleCast}
             disabled={isCasting || isInterpreting || !question.trim()}
             className="w-full bg-gold-500 text-indigo-900 font-mystic font-bold h-16 rounded-full uppercase italic tracking-widest text-xl shadow-ethereal-glow hover:bg-gold-400"
           >
-            {isCasting ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />}
-            {isCasting ? dict.formingHexagram : dict.castHexagram}
+            {isCasting || isInterpreting ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />}
+            {isCasting ? dict.formingHexagram : (isInterpreting ? dict.computing : dict.castHexagram)}
           </Button>
         </Card>
-        <div className="flex flex-col items-center gap-2 min-h-[160px] justify-center">
+        <div className="flex flex-col-reverse items-center gap-2 min-h-[160px] justify-center relative">
           {lines.map((line, idx) => (
             <motion.div
               key={idx}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
-              className="flex gap-2 w-48 h-3 items-center"
+              className="flex gap-2 w-48 h-3 items-center relative"
             >
               {(line === 6 || line === 8) ? (
                 <>
@@ -106,7 +121,11 @@ export function IChingPage() {
               ) : (
                 <div className="w-full h-full bg-gold-500 shadow-ethereal-glow rounded-sm" />
               )}
-              {(line === 6 || line === 9) && <div className="w-2 h-2 rounded-full bg-gold-500 animate-ping absolute right-[-20px]" />}
+              {(line === 6 || line === 9) && (
+                <div className="absolute -right-6 top-1/2 -translate-y-1/2">
+                   <div className="w-2 h-2 rounded-full bg-gold-500 animate-ping" />
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

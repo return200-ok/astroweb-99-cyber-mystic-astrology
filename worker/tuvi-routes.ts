@@ -5,19 +5,24 @@ import { Solar, Lunar } from 'lunar-javascript';
 import type { ImperialEventType, AgeCompatRequest, GoodDayRequest, AuspiciousDay } from '@shared/types';
 export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
   app.post('/api/tuvi/analyze', async (c) => {
-    const { chart, language } = await c.req.json();
-    if (!chart) return bad(c, 'chart data required');
-    await new Promise(r => setTimeout(r, 800));
-    const analysis = language === 'vi'
-      ? `Phân tích Mệnh: ${chart.menhElement}. Lá số có cách cục vững vàng. Cần chú trọng các cung Tài Bạch và Quan Lộc.`
-      : `Analysis for ${chart.menhElement} element. Strong core structure detected. Focus on Career and Wealth sectors.`;
-    return ok(c, { analysis });
+    try {
+      const { chart, language } = await c.req.json();
+      if (!chart) return bad(c, 'chart data required');
+      await new Promise(r => setTimeout(r, 800));
+      const analysis = language === 'vi'
+        ? `Phân tích Mệnh: ${chart.menhElement}. Lá số có cách cục vững vàng. Cần chú trọng các cung Tài Bạch và Quan Lộc.`
+        : `Analysis for ${chart.menhElement} element. Strong core structure detected. Focus on Career and Wealth sectors.`;
+      return ok(c, { analysis });
+    } catch (e) {
+      console.error("[Tuvi Analysis Error]", e);
+      return bad(c, "Failed to analyze chart");
+    }
   });
   app.post('/api/tuvi/age-compat', async (c) => {
-    const body = await c.req.json() as AgeCompatRequest;
-    if (!body.personA?.dob || !body.personB?.dob) return bad(c, 'Both birth dates required');
-    const { personA, personB, eventType } = body;
     try {
+      const body = await c.req.json() as AgeCompatRequest;
+      if (!body.personA?.dob || !body.personB?.dob) return bad(c, 'Both birth dates required');
+      const { personA, personB, eventType } = body;
       const dateA = new Date(personA.dob);
       const dateB = new Date(personB.dob);
       if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
@@ -43,14 +48,15 @@ export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
         elements: [lunarA.getYearXun(), lunarB.getYearXun()]
       });
     } catch (e) {
+      console.error("[Tuvi Age Compat Error]", e);
       return bad(c, 'Failed to process age compatibility');
     }
   });
   app.post('/api/tuvi/good-days', async (c) => {
-    const body = await c.req.json() as GoodDayRequest;
-    if (!body.startDate || !body.endDate) return bad(c, 'Date range required');
-    const { startDate, endDate, eventType } = body;
     try {
+      const body = await c.req.json() as GoodDayRequest;
+      if (!body.startDate || !body.endDate) return bad(c, 'Date range required');
+      const { startDate, endDate, eventType } = body;
       const start = new Date(startDate);
       const end = new Date(endDate);
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
@@ -58,18 +64,20 @@ export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
       }
       const results: AuspiciousDay[] = [];
       const current = new Date(start);
-      const maxLimit = new Date(start);
-      maxLimit.setDate(maxLimit.getDate() + 31);
-      const finalEnd = end > maxLimit ? maxLimit : end;
-      while (current <= finalEnd) {
-        // Use a copy to avoid mutation issues during Solar.fromDate
-        const loopDate = new Date(current);
-        const solar = Solar.fromDate(loopDate);
+      // Hard cap at 31 days to prevent infinite loops or DO execution limits
+      const maxLimitDate = new Date(start);
+      maxLimitDate.setDate(maxLimitDate.getDate() + 31);
+      const actualEnd = end > maxLimitDate ? maxLimitDate : end;
+      while (current <= actualEnd) {
+        // Clone date to prevent mutation issues in Lunar object creation
+        const dateToProcess = new Date(current);
+        const solar = Solar.fromDate(dateToProcess);
         const lunar = solar.getLunar();
+        // Traditional "Hoàng Đạo" logic (simplified for oracle purposes)
         const isHoangDao = lunar.getDayZhiIndex() % 2 === 0;
         if (isHoangDao) {
           results.push({
-            date: loopDate.toISOString(),
+            date: dateToProcess.toISOString(),
             lunarDate: `${lunar.getDay()}/${lunar.getMonth()}`,
             type: 'Hoàng Đạo',
             stars: ['Thanh Long', 'Minh Đường'],
@@ -80,6 +88,7 @@ export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
       }
       return ok(c, results);
     } catch (e) {
+      console.error("[Tuvi Good Days Error]", e);
       return bad(c, 'Failed to process auspicious days search');
     }
   });
@@ -88,7 +97,7 @@ export function tuviRoutes(app: Hono<{ Bindings: Env }>) {
     const data = years.map(y => ({
       year: y,
       tamTai: y % 3 === 0,
-      kimLau: y % 9 === 1 || y % 9 === 3 || y % 9 === 6 || y % 9 === 8,
+      kimLau: [1, 3, 6, 8].includes(y % 9),
       hoangOc: y % 6 === 0
     }));
     return ok(c, data);
