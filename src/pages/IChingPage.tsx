@@ -31,14 +31,14 @@ export function IChingPage() {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.frequency.setValueAtTime(330, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.03, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.3);
+      osc.stop(ctx.currentTime + 0.4);
     } catch (e) {
       console.warn("Audio feedback suppressed.");
     }
@@ -54,8 +54,9 @@ export function IChingPage() {
     setLines([]);
     toast.info("Entering ritual state...");
     const newLines: IChingLineType[] = [];
+    // Interval adjusted to allow stalks to overlap and fall gracefully
     for (let i = 0; i < 6; i++) {
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 900));
       const nextLine = castLine();
       newLines.push(nextLine);
       setLines([...newLines]);
@@ -63,7 +64,7 @@ export function IChingPage() {
     }
     setIsCasting(false);
     setIsInterpreting(true);
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 1200));
     const { mainBinary, transBinary } = generateHexagrams(newLines);
     const mainHex = getHexagram(mainBinary);
     const transHex = getHexagram(transBinary);
@@ -117,14 +118,14 @@ export function IChingPage() {
                 onChange={e => setQuestion(e.target.value)}
                 placeholder="Whisper your query..."
                 disabled={isCasting || isInterpreting}
-                className="bg-indigo-900/50 border-gold-500/30 text-gold-500 rounded-2xl h-16 px-6 text-lg italic focus:ring-gold-500"
+                className="bg-indigo-900/50 border-gold-500/30 text-gold-500 rounded-2xl h-16 px-6 text-lg italic focus:ring-gold-500 transition-all"
               />
             </div>
             <div className="flex gap-4">
               <Button
                 onClick={handleCast}
                 disabled={isCasting || isInterpreting || !question.trim()}
-                className="flex-1 bg-gold-500 text-indigo-900 font-mystic font-bold h-16 rounded-full uppercase italic tracking-widest text-lg shadow-ethereal-glow hover:bg-gold-400 disabled:opacity-50"
+                className="flex-1 bg-gold-500 text-indigo-900 font-mystic font-bold h-16 rounded-full uppercase italic tracking-widest text-lg shadow-ethereal-glow hover:bg-gold-400 disabled:opacity-50 transition-all"
               >
                 {isCasting || isInterpreting ? (
                   <Loader2 className="animate-spin mr-2" />
@@ -134,8 +135,8 @@ export function IChingPage() {
                 {isCasting ? dict.formingHexagram : (isInterpreting ? dict.computing : dict.castHexagram)}
               </Button>
               {(lines.length > 0 || result) && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={handleReset}
                   className="w-16 h-16 rounded-full border-gold-500/30 text-gold-500 hover:bg-gold-500/10 transition-all active:scale-95"
                 >
@@ -163,7 +164,7 @@ export function IChingPage() {
       </div>
       <AnimatePresence>
         {result && (
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto mt-12 pb-20">
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-3xl mx-auto mt-12 pb-20">
             <Card className="bg-indigo-950/60 border border-gold-500/30 p-10 rounded-[3rem] shadow-ethereal-glow relative overflow-hidden">
               <div className="absolute top-0 right-0 p-8 opacity-10">
                 <Scroll className="w-32 h-32 text-gold-500" />
@@ -175,29 +176,44 @@ export function IChingPage() {
                   </h2>
                   <div className="h-0.5 w-24 bg-gold-500/30 mx-auto rounded-full" />
                 </div>
-                <p className="text-gold-500 font-serif text-3xl italic leading-relaxed px-4">
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-gold-500 font-serif text-3xl italic leading-relaxed px-4"
+                >
                   “{result.summary}”
-                </p>
+                </motion.p>
                 <div className="w-full space-y-8 text-left">
-                  <div className="space-y-4">
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="space-y-4"
+                  >
                     <p className="font-mystic text-xs uppercase tracking-widest text-gold-500/60 border-b border-gold-500/10 pb-2">
                       Cosmic Analysis
                     </p>
                     <p className="text-gold-500/90 font-serif leading-relaxed text-lg italic indent-8">
                       {result.analysis}
                     </p>
-                  </div>
-                  <div className="space-y-4">
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.9 }}
+                    className="space-y-4"
+                  >
                     <p className="font-mystic text-xs uppercase tracking-widest text-gold-500/60 border-b border-gold-500/10 pb-2">
                       {dict.advice}
                     </p>
                     <ul className="grid gap-4">
                       {result.guidance.map((g, i) => (
-                        <motion.li 
-                          key={i} 
-                          initial={{ opacity: 0, x: -10 }} 
-                          animate={{ opacity: 1, x: 0 }} 
-                          transition={{ delay: 0.2 + (i * 0.1) }}
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 1.2 + (i * 0.1) }}
                           className="flex items-start gap-4 text-gold-500/80 font-serif italic text-lg"
                         >
                           <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full border border-gold-500/30 text-[10px] font-mystic not-italic">
@@ -207,15 +223,16 @@ export function IChingPage() {
                         </motion.li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 </div>
-                <div className="pt-8 w-full flex justify-center border-t border-gold-500/10">
-                  <Button 
-                    variant="ghost" 
+                <div className="pt-12 w-full flex justify-center border-t border-gold-500/10">
+                  <Button
+                    variant="ghost"
                     onClick={handleReset}
-                    className="text-gold-500/40 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest hover:bg-gold-500/5 px-8 py-6 rounded-full"
+                    className="group text-gold-500/40 hover:text-gold-500 font-mystic uppercase text-[10px] tracking-widest hover:bg-gold-500/5 px-12 py-8 rounded-full transition-all hover:shadow-[0_0_15px_rgba(255,215,0,0.1)]"
                   >
-                    <RotateCcw className="w-3 h-3 mr-2" /> Return to Silence
+                    <RotateCcw className="w-3 h-3 mr-2 group-hover:rotate-[-45deg] transition-transform" /> 
+                    Return to Silence
                   </Button>
                 </div>
               </div>
